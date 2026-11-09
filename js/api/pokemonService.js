@@ -149,21 +149,18 @@ export async function getPokemon(identifier) {
         meloetta: "meloetta-aria",
         deoxys: "deoxys-normal",
     };
-    const requestName = RESOURCE_NAME_ALIASES[normalizedQuery] || normalizedQuery;
-    try {
-        return await getJSON(`/pokemon/${encodeURIComponent(requestName)}/`);
-    } catch (error) {
-        if (error.status !== 404) {
-            throw error;
-        }
-    }
-    const canonicalName = await findCanonicalPokemonName(rawQuery);
 
-    if (canonicalName) {
-        return getJSON(`/pokemon/${encodeURIComponent(canonicalName)}/`);
+    // Resolve partial and formatted searches against the cached name index
+    // before calling PokeAPI. This avoids predictable 404 requests for input
+    // such as "pika" when the intended result is "pikachu".
+    const requestName = RESOURCE_NAME_ALIASES[normalizedQuery]
+        || await findCanonicalPokemonName(rawQuery);
+
+    if (!requestName) {
+        throw new Error(
+            `No Pokémon found for “${rawQuery}”. Check the spelling or try its Pokédex ID.`
+        );
     }
 
-    throw new Error(
-        `No Pokémon found for “${rawQuery}”. Check the spelling or try its Pokédex ID.`
-    );
+    return getJSON(`/pokemon/${encodeURIComponent(requestName)}/`);
 }
