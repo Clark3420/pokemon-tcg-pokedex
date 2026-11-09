@@ -1,0 +1,240 @@
+
+/* Physical-card carousel handoff: outgoing card leaves, incoming card follows. */
+.pokemon-card.card-enter-from-right {
+    animation: card-slide-in-from-right 390ms cubic-bezier(.22,.68,0,1) both;
+    will-change: transform, opacity;
+}
+.pokemon-card.card-enter-from-left {
+    animation: card-slide-in-from-left 390ms cubic-bezier(.22,.68,0,1) both;
+    will-change: transform, opacity;
+}
+.pokemon-card.card-exit-to-left {
+    animation: card-slide-out-to-left 330ms cubic-bezier(.55,0,.8,.35) both;
+    will-change: transform, opacity;
+}
+.pokemon-card.card-exit-to-right {
+    animation: card-slide-out-to-right 330ms cubic-bezier(.55,0,.8,.35) both;
+    will-change: transform, opacity;
+}
+@keyframes card-slide-in-from-right {
+    from { opacity: .72; transform: translate3d(34%, 0, 0) scale(.965); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes card-slide-in-from-left {
+    from { opacity: .72; transform: translate3d(-34%, 0, 0) scale(.965); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes card-slide-out-to-left {
+    from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    to   { opacity: .55; transform: translate3d(-34%, 0, 0) scale(.965); }
+}
+@keyframes card-slide-out-to-right {
+    from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    to   { opacity: .55; transform: translate3d(34%, 0, 0) scale(.965); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pokemon-card.card-enter-from-right,
+    .pokemon-card.card-enter-from-left,
+    .pokemon-card.card-exit-to-left,
+    .pokemon-card.card-exit-to-right {
+        animation: none !important;
+        will-change: auto;
+    }
+}
+
+
+.pokemon-card .pokemon-card-face {
+    isolation: isolate;
+}
+
+.pokemon-card .pokemon-card-face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+
+    opacity: 0;
+    background:
+        linear-gradient(116deg,
+            transparent 0%,
+            rgb(255 255 255 / 5%) 16%,
+            rgb(255 255 255 / 48%) 23%,
+            rgb(255 255 255 / 7%) 29%,
+            transparent 38%,
+            rgb(255 70 180 / 17%) 47%,
+            rgb(80 225 255 / 20%) 56%,
+            rgb(255 255 255 / 4%) 63%,
+            transparent 75%
+        ),
+        repeating-linear-gradient(
+            132deg,
+            transparent 0 7px,
+            rgb(255 255 255 / 19%) 8px,
+            transparent 9px 16px
+        ),
+        linear-gradient(125deg,
+            rgb(255 75 165 / 13%),
+            rgb(255 220 80 / 16%),
+            rgb(100 255 185 / 13%),
+            rgb(80 205 255 / 17%),
+            rgb(155 105 255 / 16%),
+            rgb(255 75 165 / 13%)
+        );
+    background-size: 240% 240%, 100% 100%, 240% 240%;
+    background-position: 110% 0%, center, 0% 50%;
+    mix-blend-mode: color-dodge;
+    animation: none;
+    transition: opacity 250ms ease, filter 250ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .pokemon-card.is-legendary:hover .pokemon-card-face::after {
+        opacity: 0.52;
+        filter: saturate(1.18);
+    }
+
+    .pokemon-card.is-mythical:hover .pokemon-card-face::after {
+        opacity: 0.54;
+        filter: saturate(1.2);
+    }
+
+    .pokemon-card.is-prismatic:hover .pokemon-card-face::after {
+        opacity: 0.62;
+        filter: saturate(1.24);
+    }
+}
+
+.pokemon-card.is-legendary .pokemon-card-face::after {
+    opacity: 0.43;
+    background:
+        linear-gradient(116deg,
+            transparent 0%,
+            rgb(255 255 220 / 5%) 15%,
+            rgb(255 250 190 / 72%) 23%,
+            rgb(255 255 225 / 16%) 29%,
+            transparent 38%,
+            rgb(255 190 25 / 38%) 48%,
+            rgb(255 228 100 / 43%) 57%,
+            rgb(255 255 230 / 12%) 64%,
+            transparent 76%
+        ),
+        repeating-linear-gradient(132deg, transparent 0 7px, rgb(255 242 160 / 25%) 8px, transparent 9px 16px),
+        linear-gradient(125deg, rgb(255 190 20 / 23%), rgb(255 248 165 / 31%), rgb(194 126 0 / 23%), rgb(255 224 80 / 29%), rgb(255 190 20 / 23%));
+    background-size: 240% 240%, 100% 100%, 240% 240%;
+    mix-blend-mode: color-dodge;
+    animation: holographic-shine 6s ease-in-out infinite;
+}
+
+.pokemon-card.is-mythical .pokemon-card-face::after {
+    opacity: 0.45;
+    background:
+        linear-gradient(116deg,
+            transparent 0%,
+            rgb(255 230 250 / 5%) 15%,
+            rgb(255 220 250 / 70%) 23%,
+            rgb(255 245 255 / 15%) 29%,
+            transparent 38%,
+            rgb(255 40 180 / 38%) 48%,
+            rgb(255 135 220 / 45%) 57%,
+            rgb(255 245 255 / 12%) 64%,
+            transparent 76%
+        ),
+        repeating-linear-gradient(132deg, transparent 0 7px, rgb(255 215 245 / 24%) 8px, transparent 9px 16px),
+        linear-gradient(125deg, rgb(255 65 180 / 25%), rgb(255 205 245 / 32%), rgb(175 35 150 / 23%), rgb(255 130 220 / 31%), rgb(255 65 180 / 25%));
+    background-size: 240% 240%, 100% 100%, 240% 240%;
+    mix-blend-mode: color-dodge;
+    filter: saturate(1.15);
+    animation: holographic-shine 6s ease-in-out infinite;
+}
+
+.pokemon-card.is-prismatic .pokemon-card-face::after {
+    opacity: 0.49;
+    background:
+        linear-gradient(116deg,
+            transparent 0%,
+            rgb(255 255 255 / 5%) 14%,
+            rgb(255 255 255 / 74%) 22%,
+            rgb(255 255 255 / 15%) 29%,
+            transparent 37%,
+            rgb(255 70 170 / 35%) 45%,
+            rgb(255 225 75 / 38%) 51%,
+            rgb(70 255 160 / 32%) 57%,
+            rgb(65 215 255 / 39%) 63%,
+            rgb(160 90 255 / 34%) 69%,
+            transparent 80%
+        ),
+        repeating-linear-gradient(132deg, transparent 0 6px, rgb(255 255 255 / 28%) 7px, transparent 8px 15px),
+        conic-gradient(from 25deg at 50% 50%, rgb(255 50 150 / 32%), rgb(255 220 65 / 34%), rgb(75 255 140 / 30%), rgb(50 220 255 / 34%), rgb(125 85 255 / 33%), rgb(255 65 205 / 32%), rgb(255 50 150 / 32%));
+    background-size: 260% 260%, 100% 100%, 220% 220%;
+    background-position: 110% 0%, center, 0% 50%;
+    mix-blend-mode: color-dodge;
+    filter: saturate(1.22) contrast(1.04);
+    animation: prismatic-shine 6s ease-in-out infinite;
+}
+
+.pokemon-card.is-prismatic:hover .pokemon-card-face::after {
+    opacity: 0.62;
+}
+
+@keyframes prismatic-shine {
+    0% {
+        background-position: 100% 0%, center, 0% 50%;
+        filter: saturate(1.15) hue-rotate(0deg) contrast(1.02);
+    }
+    50% {
+        background-position: 0% 100%, center, 100% 50%;
+        filter: saturate(1.32) hue-rotate(12deg) contrast(1.06);
+    }
+    100% {
+        background-position: 100% 0%, center, 0% 50%;
+        filter: saturate(1.15) hue-rotate(0deg) contrast(1.02);
+    }
+}
+
+@keyframes holographic-shine {
+    0% { background-position: 100% 0%, center, 0% 50%; }
+    50% { background-position: 0% 100%, center, 100% 50%; }
+    100% { background-position: 100% 0%, center, 0% 50%; }
+}
+
+.pokemon-card:active { cursor: grabbing; }
+@media (prefers-reduced-motion: reduce) {
+    .pokemon-card.card-enter-from-right,
+    .pokemon-card.card-enter-from-left,
+    .pokemon-card.is-prismatic .pokemon-card-face::after,
+    .pokemon-card.is-legendary .pokemon-card-face::after,
+    .pokemon-card.is-mythical .pokemon-card-face::after { animation: none; }
+}
+
+
+/* Single continuous card handoff: the artwork swaps while the card is
+   momentarily out of view, avoiding a visible blink between two animations. */
+.pokemon-card.card-swap-next {
+    animation: pokemon-card-swap-next 620ms cubic-bezier(.65, 0, .25, 1) both;
+    will-change: transform, opacity;
+}
+.pokemon-card.card-swap-previous {
+    animation: pokemon-card-swap-previous 620ms cubic-bezier(.65, 0, .25, 1) both;
+    will-change: transform, opacity;
+}
+@keyframes pokemon-card-swap-next {
+    0%   { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+    42%  { opacity: 0; transform: translate3d(-32%,0,0) scale(.97); }
+    43%  { opacity: 0; transform: translate3d(32%,0,0) scale(.97); }
+    100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes pokemon-card-swap-previous {
+    0%   { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+    42%  { opacity: 0; transform: translate3d(32%,0,0) scale(.97); }
+    43%  { opacity: 0; transform: translate3d(-32%,0,0) scale(.97); }
+    100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pokemon-card.card-swap-next,
+    .pokemon-card.card-swap-previous {
+        animation: none !important;
+        will-change: auto;
+    }
+}
