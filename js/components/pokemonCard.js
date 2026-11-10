@@ -110,11 +110,50 @@ function renderAbilities(abilities) {
     });
 }
 
-export function renderPokemonCard(pokemon, species) {
+export async function preloadPokemonArtwork(pokemon) {
+    const candidates = [
+        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemon.id}.svg`,
+        pokemon.sprites.other?.["official-artwork"]?.front_default,
+    ].filter((url, index, urls) => url && urls.indexOf(url) === index);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+        const url = candidates[index];
+        const loaded = await new Promise((resolve) => {
+            const image = new Image();
+            let settled = false;
+            const finish = (result) => {
+                if (settled) return;
+                settled = true;
+                window.clearTimeout(timeoutId);
+                resolve(result);
+            };
+            const timeoutId = window.setTimeout(() => finish(false), 8000);
+            image.onload = async () => {
+                try {
+                    if (typeof image.decode === "function") await image.decode();
+                } catch {
+                    // A successful load is still usable if decode() is unsupported.
+                }
+                finish(true);
+            };
+            image.onerror = () => finish(false);
+            image.src = url;
+        });
+
+        if (loaded) return candidates.slice(index);
+    }
+
+    return candidates;
+}
+
+export function renderPokemonCard(pokemon, species, artworkCandidates = null) {
     const dreamWorldArtwork =
         `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemon.id}.svg`;
     const officialArtwork =
         pokemon.sprites.other?.["official-artwork"]?.front_default;
+    const imageCandidates = artworkCandidates?.length
+        ? artworkCandidates
+        : [dreamWorldArtwork, officialArtwork].filter(Boolean);
 
     getElement("pokemon-name").textContent =
         formatPokemonName(pokemon.name);
@@ -124,12 +163,12 @@ export function renderPokemonCard(pokemon, species) {
 
     ["pokemon-image", "back-pokemon-image"].forEach((id) => {
         const image = getElement(id);
-        let usingOfficialArtwork = false;
+        let candidateIndex = 0;
         image.onerror = () => {
-            if (!usingOfficialArtwork && officialArtwork) {
-                usingOfficialArtwork = true;
+            candidateIndex += 1;
+            if (candidateIndex < imageCandidates.length) {
                 image.classList.remove("image-unavailable");
-                image.src = officialArtwork;
+                image.src = imageCandidates[candidateIndex];
                 return;
             }
 
@@ -138,7 +177,7 @@ export function renderPokemonCard(pokemon, species) {
             image.classList.add("image-unavailable");
         };
         image.classList.remove("image-unavailable");
-        image.src = dreamWorldArtwork;
+        image.src = imageCandidates[0] || dreamWorldArtwork;
         image.alt = `${formatPokemonName(pokemon.name)} artwork`;
     });
 
@@ -170,11 +209,14 @@ export function renderPokemonCard(pokemon, species) {
     card.dataset.type = pokemon.types[0]?.type.name || "normal";
     document.body.dataset.pokemonType = pokemon.types[0]?.type.name || "normal";
 
-    if (Number(pokemon.id) >= 10001) {
+    const isAlternateForm = Number(pokemon.id) >= 10001;
+    const isSpecialSpecies = species?.is_legendary || species?.is_mythical;
+
+    if (isAlternateForm && isSpecialSpecies) {
         card.classList.add("is-prismatic");
-    } else if (species?.is_legendary) {
+    } else if (!isAlternateForm && species?.is_legendary) {
         card.classList.add("is-legendary");
-    } else if (species?.is_mythical) {
+    } else if (!isAlternateForm && species?.is_mythical) {
         card.classList.add("is-mythical");
     }
 

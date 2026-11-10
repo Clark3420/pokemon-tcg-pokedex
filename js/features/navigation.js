@@ -1,6 +1,6 @@
 import { getPokemon, getAllPokemonIds } from "../api/pokemonService.js";
 import { getPokemonSpecies } from "../api/speciesService.js";
-import { renderPokemonCard } from "../components/pokemonCard.js";
+import { renderPokemonCard, preloadPokemonArtwork } from "../components/pokemonCard.js";
 import { setActiveCollectionCount } from "./collectionDashboard.js";
 
 const BASE_POKEMON_COUNT = 1025;
@@ -287,8 +287,17 @@ export async function navigateToPokemon(id, direction = 0) {
         if (requestId !== navigationRequestId) {
             return;
         }
-const commitPokemon = () => {
-            renderPokemonCard(pokemon, species);
+
+        // Decode the incoming artwork before the card becomes visible again.
+        // This prevents the browser from briefly painting the previous image
+        // while the new image is still being fetched or decoded.
+        const artworkCandidates = await preloadPokemonArtwork(pokemon);
+        if (requestId !== navigationRequestId) {
+            return;
+        }
+
+        const commitPokemon = () => {
+            renderPokemonCard(pokemon, species, artworkCandidates);
             card.classList.remove("d-none", "card-is-loading");
             errorMessage.classList.add("d-none");
             lastFailedNavigation = null;
