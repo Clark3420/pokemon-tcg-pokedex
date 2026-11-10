@@ -264,6 +264,18 @@ export async function navigateToPokemon(id, direction = 0) {
     searchButton.disabled = true;
 
     try {
+        // Give the browser two paint opportunities so the loading overlay is
+        // visible immediately before the Next/Previous request begins.
+        if (direction !== 0 && hasVisibleCard) {
+            await new Promise((resolve) => {
+                requestAnimationFrame(() => requestAnimationFrame(resolve));
+            });
+
+            if (requestId !== navigationRequestId) {
+                return;
+            }
+        }
+
         const pokemon = await getPokemon(id);
 
         if (requestId !== navigationRequestId) {
@@ -317,6 +329,13 @@ export async function navigateToPokemon(id, direction = 0) {
         };
 
         if (direction !== 0 && hasVisibleCard) {
+            // Finish the loading phase before starting the card transition.
+            // The new Pokémon must not be revealed while the loading spinner
+            // is still active.
+            loadingIndicator.classList.add("d-none");
+            loadingIndicator.classList.remove("loading-compact");
+            card.classList.remove("card-is-loading");
+
             // One continuous slide: old artwork exits, content swaps at the
             // invisible midpoint, and the new artwork enters from the other side.
             await playCardSwapAnimation(direction, commitPokemon);

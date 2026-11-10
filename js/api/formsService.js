@@ -11,27 +11,66 @@ function resourceId(url, resource) {
     return Number(match[1]);
 }
 
-function pokemonArtworkCandidates(pokemon, formName = null) {
+function pokemonArtworkCandidates(pokemon, formName = null, formResourceName = null) {
     const pokemonId = Number(pokemon?.id);
     if (!Number.isSafeInteger(pokemonId) || pokemonId <= 0) return [];
 
     const pokemonName = String(pokemon?.name || "").toLowerCase();
-    const normalizedFormName = String(formName || "").toLowerCase();
-    const formSuffix = normalizedFormName.startsWith(`${pokemonName}-`)
-        ? normalizedFormName.slice(pokemonName.length + 1)
-        : "";
+    const normalizedFormName = String(formName || "").trim().toLowerCase();
+    const normalizedResourceName = String(formResourceName || "").trim().toLowerCase();
 
-    const formDreamWorldArtwork = formSuffix
-        ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemonId}-${formSuffix}.svg`
-        : null;
+    // PokeAPI exposes a form's display name and resource name separately.
+    // Build suffixes from both so form families such as Unown, Arceus,
+    // Deoxys, Rotom, Giratina, Shaymin, and regional variants are handled
+    // through the same path instead of one-off species checks.
+    const suffixes = new Set();
+    const addSuffix = (value) => {
+        const normalized = String(value || "").trim().toLowerCase();
+        if (!normalized || normalized === pokemonName) return;
+        const suffix = normalized.startsWith(`${pokemonName}-`)
+            ? normalized.slice(pokemonName.length + 1)
+            : normalized;
+        if (suffix && suffix !== "normal" && suffix !== "default") {
+            suffixes.add(suffix);
+        }
+    };
+
+    addSuffix(normalizedFormName);
+    addSuffix(normalizedResourceName);
+    addSuffix(pokemon?.name);
+
+    const isFemaleForm = [...suffixes].some((suffix) =>
+        suffix === "female" || suffix.endsWith("-female")
+    ) || normalizedFormName === "female"
+      || normalizedResourceName.endsWith("-female");
+
+    const dreamWorldSprites = pokemon?.sprites?.other?.["dream_world"];
+    const homeSprites = pokemon?.sprites?.other?.home;
+    const femaleArtworkCandidates = isFemaleForm
+        ? [
+            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/female/${pokemonId}.svg`,
+            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/female/${pokemonId}-female.svg`,
+            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/female/${pokemonId}.png`,
+            homeSprites?.front_female,
+            pokemon?.sprites?.front_female,
+        ]
+        : [];
+
+    const formDreamWorldCandidates = [...suffixes].flatMap((suffix) => [
+        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemonId}-${suffix}.svg`,
+        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemonId}/${suffix}.svg`,
+    ]);
+
     const baseDreamWorldArtwork =
-        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemonId}.svg`;
+        dreamWorldSprites?.front_default
+        || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemonId}.svg`;
 
     return [
-        formDreamWorldArtwork,
+        ...femaleArtworkCandidates,
+        ...formDreamWorldCandidates,
         baseDreamWorldArtwork,
         pokemon?.sprites?.other?.["official-artwork"]?.front_default,
-    ].filter(Boolean);
+    ].filter((url, index, urls) => Boolean(url) && urls.indexOf(url) === index);
 }
 function pokemonArtwork(pokemon) {
     return pokemonArtworkCandidates(pokemon)[0] || "";
@@ -90,17 +129,19 @@ async function getVarietyForms(species) {
     const results = await mapWithConcurrency(varieties, FORM_DETAIL_CONCURRENCY, async (variety) => {
         try {
             const pokemon = await getPokemon(variety.pokemon.name);
+            const formName = variety.pokemon.name === species.name
+                ? ""
+                : variety.pokemon.name.slice(species.name.length + 1);
+            const imageCandidates = pokemonArtworkCandidates(pokemon, formName);
             return {
                 id: pokemon.id,
                 pokemonId: pokemon.id,
                 formId: null,
                 name: pokemon.name,
-                formName: variety.pokemon.name === species.name
-                    ? ""
-                    : variety.pokemon.name.slice(species.name.length + 1),
+                formName,
                 isDefault: Boolean(variety.is_default),
-                image: pokemonArtworkCandidates(pokemon)[0] || "",
-                imageCandidates: pokemonArtworkCandidates(pokemon),
+                image: imageCandidates[0] || "",
+                imageCandidates,
                 types: (pokemon.types || []).map((item) => item.type.name),
                 selectablePokemon: true,
             };
@@ -133,8 +174,13 @@ async function getPokemonFormEntries(speciesName) {
             let imageCandidates = [];
             try {
                 associatedPokemon = await getPokemon(pokemonId);
+                // PokeAPI can identify a gender variation through form_name
+                // even when the form resource name itself is just "pyroar".
+                // Use the display form name so female Pyroar resolves to its
+                // dedicated Dream World sprite instead of the male default.
                 imageCandidates = pokemonArtworkCandidates(
                     associatedPokemon,
+                    formName || form.name,
                     form.name
                 );
             } catch (error) {
@@ -204,14 +250,21 @@ export async function getPokemonForms(pokemon) {
             if (!deduped.has(key)) deduped.set(key, form);
         });
         return [...deduped.values()].sort((a, b) =>
-            Number(b.isDefault) - Number(a.isDefault)
+            Number(a.pokemonId ?? a.id) - Number(b.pokemonId ?? b.id)
+            || Number(a.formId ?? 0) - Number(b.formId ?? 0)
+            || Number(b.isDefault) - Number(a.isDefault)
             || a.formName.localeCompare(b.formName)
         );
     }
 
     const varietyForms = await getVarietyForms(species);
     if (varietyForms.length > 1) {
-        return varietyForms.sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
+        return varietyForms.sort((a, b) =>
+            Number(a.pokemonId ?? a.id) - Number(b.pokemonId ?? b.id)
+            || Number(a.formId ?? 0) - Number(b.formId ?? 0)
+            || Number(b.isDefault) - Number(a.isDefault)
+            || a.formName.localeCompare(b.formName)
+        );
     }
 
     return [];

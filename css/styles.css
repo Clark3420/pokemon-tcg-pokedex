@@ -678,3 +678,30 @@ button, input, select { font: inherit; }
     border-color: rgb(148 163 184 / 28%);
     box-shadow: none;
 }
+
+
+/* Solid hover feedback for the enabled Pokémon Forms button. */
+#forms-button:not(:disabled):not(.disabled) {
+    transition:
+        background-color .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease,
+        transform .18s ease;
+}
+#forms-button:not(:disabled):not(.disabled):hover {
+    color: #08111f;
+    background-color: #0aa6c2;
+    border-color: #0aa6c2;
+    box-shadow: 0 5px 14px rgb(13 202 240 / 24%);
+    transform: translateY(-1px);
+}
+#forms-button:not(:disabled):not(.disabled):active {
+    background-color: #0891b2;
+    border-color: #0891b2;
+    box-shadow: none;
+    transform: translateY(0);
+}
+#forms-button:disabled:hover,
+#forms-button:disabled:active {
+    transform: none;
+}
