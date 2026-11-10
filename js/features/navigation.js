@@ -240,8 +240,16 @@ export async function navigateToPokemon(id, direction = 0) {
     if (!hasVisibleCard) {
         loadingIndicator.classList.remove("d-none");
         loadingIndicator.classList.remove("loading-compact");
+    } else if (direction !== 0) {
+        // Show a compact overlay over the current card while the next/previous
+        // Pokémon data and artwork are fetched and decoded.
+        loadingIndicator.classList.remove("d-none");
+        loadingIndicator.classList.add("loading-compact");
+        const loadingText = loadingIndicator.querySelector("p");
+        if (loadingText) loadingText.textContent = "Loading Pokémon...";
+        card.classList.add("card-is-loading");
     } else {
-        // Keep the current Pokémon fully visible while the next request loads.
+        // Searches keep the current card visible without the navigation overlay.
         loadingIndicator.classList.add("d-none");
         loadingIndicator.classList.remove("loading-compact");
         card.classList.remove("card-is-loading");

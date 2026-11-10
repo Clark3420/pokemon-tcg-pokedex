@@ -522,10 +522,11 @@ button, input, select { font: inherit; }
 #loading-indicator.loading-compact {
     min-height: 0;
     border-radius: 18px;
-    background: rgb(12 18 32 / 72%);
+    background: rgb(12 18 32 / 58%);
     color: #f8fafc;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    z-index: 14;
 }
 #error-message {
     display: flex;
