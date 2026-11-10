@@ -13,13 +13,18 @@ import { getEvolutionChain } from "./api/evolutionService.js";
 import {
     displayEvolutionChain,
     showEvolutionModal,
+    setEvolutionModalLoading,
 } from "./components/evolutionModal.js";
 
 import "./features/cardFlip.js";
 import "./features/swipe.js";
 import { getAllPokemonIds, getPokemonSuggestions } from "./api/pokemonService.js";
 import { getPokemonForms } from "./api/formsService.js";
-import { displayPokemonForms, showFormsModal } from "./components/formsModal.js";
+import {
+    displayPokemonForms,
+    showFormsModal,
+    setFormsModalLoading,
+} from "./components/formsModal.js";
 
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
@@ -459,8 +464,9 @@ evolutionButton.addEventListener("click", async () => {
     evolutionRequestInProgress = true;
     evolutionButton.disabled = true;
     evolutionButton.textContent = "Loading Evolutions...";
-
     statusMessage.textContent = "";
+    setEvolutionModalLoading(true);
+    showEvolutionModal();
 
     try {
         const chain = await getEvolutionChain(
@@ -468,9 +474,10 @@ evolutionButton.addEventListener("click", async () => {
                 .replace("#", "")
         );
 
-        displayEvolutionChain(chain);
-        showEvolutionModal();
+        await displayEvolutionChain(chain);
+        setEvolutionModalLoading(false);
     } catch (error) {
+        setEvolutionModalLoading(false);
         statusMessage.textContent =
             `Unable to load evolution chain: ${error.message}`;
     } finally {
@@ -632,20 +639,29 @@ formsButton.addEventListener("click", async () => {
     formsButton.disabled = true;
     const previousLabel = formsButton.textContent;
     formsButton.textContent = "Loading Forms...";
+    setFormsModalLoading(true);
+    showFormsModal();
     try {
         let forms = [];
         try { forms = JSON.parse(formsButton.dataset.forms || "[]"); } catch { forms = []; }
         if (forms.length < 2) forms = await getPokemonForms(currentPokemonForForms);
-        if (requestId !== currentFormsRequestId) return;
+        if (requestId !== currentFormsRequestId) {
+            setFormsModalLoading(false);
+            bootstrap.Modal.getOrCreateInstance(document.getElementById("forms-modal")).hide();
+            return;
+        }
         if (forms.length < 2) {
+            setFormsModalLoading(false);
+            bootstrap.Modal.getOrCreateInstance(document.getElementById("forms-modal")).hide();
             formsButton.disabled = true;
             formsButton.title = "This Pokémon has no alternate forms.";
             return;
         }
         formsButton.dataset.forms = JSON.stringify(forms);
-        displayPokemonForms(forms);
-        showFormsModal();
+        await displayPokemonForms(forms);
+        setFormsModalLoading(false);
     } catch (error) {
+        setFormsModalLoading(false);
         statusMessage.textContent = `Unable to load Pokémon forms: ${error.message}`;
     } finally {
         formsRequestInProgress = false;

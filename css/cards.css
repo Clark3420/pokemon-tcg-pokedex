@@ -180,24 +180,24 @@
     to { transform: scale(1.10) translate3d(.3%, -0.5%, 0); }
 }
 
-#pokemon-card[data-type="normal"] { --pokemon-environment: url("../assets/backgrounds/normal.svg"); }
-#pokemon-card[data-type="fire"] { --pokemon-environment: url("../assets/backgrounds/fire.svg"); }
-#pokemon-card[data-type="water"] { --pokemon-environment: url("../assets/backgrounds/water.svg"); }
-#pokemon-card[data-type="electric"] { --pokemon-environment: url("../assets/backgrounds/electric.svg"); }
-#pokemon-card[data-type="grass"] { --pokemon-environment: url("../assets/backgrounds/grass.svg"); }
-#pokemon-card[data-type="ice"] { --pokemon-environment: url("../assets/backgrounds/ice.svg"); }
-#pokemon-card[data-type="fighting"] { --pokemon-environment: url("../assets/backgrounds/fighting.svg"); }
-#pokemon-card[data-type="poison"] { --pokemon-environment: url("../assets/backgrounds/poison.svg"); }
-#pokemon-card[data-type="ground"] { --pokemon-environment: url("../assets/backgrounds/ground.svg"); }
-#pokemon-card[data-type="flying"] { --pokemon-environment: url("../assets/backgrounds/flying.svg"); }
-#pokemon-card[data-type="psychic"] { --pokemon-environment: url("../assets/backgrounds/psychic.svg"); }
-#pokemon-card[data-type="bug"] { --pokemon-environment: url("../assets/backgrounds/bug.svg"); }
-#pokemon-card[data-type="rock"] { --pokemon-environment: url("../assets/backgrounds/rock.svg"); }
-#pokemon-card[data-type="ghost"] { --pokemon-environment: url("../assets/backgrounds/ghost.svg"); }
-#pokemon-card[data-type="dragon"] { --pokemon-environment: url("../assets/backgrounds/dragon.svg"); }
-#pokemon-card[data-type="dark"] { --pokemon-environment: url("../assets/backgrounds/dark.svg"); }
-#pokemon-card[data-type="steel"] { --pokemon-environment: url("../assets/backgrounds/steel.svg"); }
-#pokemon-card[data-type="fairy"] { --pokemon-environment: url("../assets/backgrounds/fairy.svg"); }
+#pokemon-card[data-type="normal"] { --pokemon-environment: url("../assets/backgrounds/normal.webp"); }
+#pokemon-card[data-type="fire"] { --pokemon-environment: url("../assets/backgrounds/fire.webp"); }
+#pokemon-card[data-type="water"] { --pokemon-environment: url("../assets/backgrounds/water.webp"); }
+#pokemon-card[data-type="electric"] { --pokemon-environment: url("../assets/backgrounds/electric.webp"); }
+#pokemon-card[data-type="grass"] { --pokemon-environment: url("../assets/backgrounds/grass.webp"); }
+#pokemon-card[data-type="ice"] { --pokemon-environment: url("../assets/backgrounds/ice.webp"); }
+#pokemon-card[data-type="fighting"] { --pokemon-environment: url("../assets/backgrounds/fighting.webp"); }
+#pokemon-card[data-type="poison"] { --pokemon-environment: url("../assets/backgrounds/poison.webp"); }
+#pokemon-card[data-type="ground"] { --pokemon-environment: url("../assets/backgrounds/ground.webp"); }
+#pokemon-card[data-type="flying"] { --pokemon-environment: url("../assets/backgrounds/flying.webp"); }
+#pokemon-card[data-type="psychic"] { --pokemon-environment: url("../assets/backgrounds/psychic.webp"); }
+#pokemon-card[data-type="bug"] { --pokemon-environment: url("../assets/backgrounds/bug.webp"); }
+#pokemon-card[data-type="rock"] { --pokemon-environment: url("../assets/backgrounds/rock.webp"); }
+#pokemon-card[data-type="ghost"] { --pokemon-environment: url("../assets/backgrounds/ghost.webp"); }
+#pokemon-card[data-type="dragon"] { --pokemon-environment: url("../assets/backgrounds/dragon.webp"); }
+#pokemon-card[data-type="dark"] { --pokemon-environment: url("../assets/backgrounds/dark.webp"); }
+#pokemon-card[data-type="steel"] { --pokemon-environment: url("../assets/backgrounds/steel.webp"); }
+#pokemon-card[data-type="fairy"] { --pokemon-environment: url("../assets/backgrounds/fairy.webp"); }
 
 @media (prefers-reduced-motion: reduce) {
     .pokemon-artwork-container::before,
@@ -832,5 +832,74 @@
 @media (prefers-reduced-motion: reduce) {
     #evolution-modal .modal-content {
         scroll-behavior: auto;
+    }
+}
+
+
+/* Keep modal dimensions based on their content; the Poké Ball is an overlay. */
+#evolution-modal .modal-body,
+#forms-modal .modal-body {
+    position: relative;
+}
+#evolution-modal .modal-body.modal-is-loading #evolution-content,
+#forms-modal .modal-body.modal-is-loading .forms-intro,
+#forms-modal .modal-body.modal-is-loading #forms-content {
+    visibility: hidden;
+}
+.modal-artwork-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .85rem;
+    padding: 1rem;
+    background: rgb(8 13 25 / 76%);
+    backdrop-filter: blur(3px);
+    border-radius: inherit;
+    pointer-events: none;
+}
+.modal-artwork-loading p {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: .9rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Keep the Evolution Chain modal at a consistent size from first paint. */
+#evolution-modal .modal-content {
+    height: min(680px, calc(100dvh - 2rem));
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#evolution-modal .modal-header {
+    flex: 0 0 auto;
+}
+
+#evolution-modal .modal-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#evolution-modal #evolution-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+@media (max-width: 600px) {
+    #evolution-modal .modal-content {
+        height: min(620px, calc(100dvh - 1rem));
     }
 }

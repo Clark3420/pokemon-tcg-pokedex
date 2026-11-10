@@ -3,6 +3,38 @@ import { navigateToPokemon, getCurrentPokemonId } from "../features/navigation.j
 
 const modalElement = document.getElementById("evolution-modal");
 const contentElement = document.getElementById("evolution-content");
+const loadingElement = document.getElementById("evolution-loading");
+const modalBodyElement = modalElement.querySelector(".modal-body");
+
+export function setEvolutionModalLoading(isLoading) {
+    loadingElement.classList.toggle("d-none", !isLoading);
+    modalBodyElement.classList.toggle("modal-is-loading", isLoading);
+}
+
+async function loadImageCandidates(image, candidates) {
+    for (const candidate of candidates) {
+        try {
+            await new Promise((resolve, reject) => {
+                image.onload = resolve;
+                image.onerror = reject;
+                image.src = candidate;
+                if (image.complete && image.naturalWidth > 0) resolve();
+            });
+            if (typeof image.decode === "function") {
+                await image.decode().catch(() => {});
+            }
+            image.onload = null;
+            image.onerror = null;
+            return;
+        } catch {
+            image.onload = null;
+            image.onerror = null;
+        }
+    }
+
+    image.classList.add("image-unavailable");
+    image.removeAttribute("src");
+}
 
 // Keep modal focus predictable without authored ARIA attributes.
 let modalOpener = null;
@@ -57,7 +89,7 @@ function hideModalAndWait() {
     });
 }
 
-function createEvolutionNode(pokemon) {
+function createEvolutionNode(pokemon, imageTasks) {
     const node = document.createElement("div");
     node.className = "evolution-node";
 
@@ -74,24 +106,10 @@ function createEvolutionNode(pokemon) {
     image.alt = imageCandidates.length
         ? `${formatPokemonName(pokemon.name)} artwork`
         : "Artwork unavailable";
-    image.loading = "lazy";
+    image.loading = "eager";
     image.decoding = "async";
-
-    let imageCandidateIndex = 0;
-    image.onerror = () => {
-        imageCandidateIndex += 1;
-        if (imageCandidateIndex < imageCandidates.length) {
-            image.src = imageCandidates[imageCandidateIndex];
-            return;
-        }
-
-        image.onerror = null;
-        image.classList.add("image-unavailable");
-        image.removeAttribute("src");
-    };
-
     if (imageCandidates.length) {
-        image.src = imageCandidates[0];
+        imageTasks.push(loadImageCandidates(image, imageCandidates));
     } else {
         image.classList.add("image-unavailable");
     }
@@ -135,7 +153,7 @@ function createEvolutionNode(pokemon) {
         branches.className = "evolution-branches";
 
         pokemon.evolvesTo.forEach((evolution) => {
-            branches.appendChild(createEvolutionNode(evolution));
+            branches.appendChild(createEvolutionNode(evolution, imageTasks));
         });
 
         node.appendChild(branches);
@@ -144,11 +162,12 @@ function createEvolutionNode(pokemon) {
     return node;
 }
 
-export function displayEvolutionChain(chain) {
+export async function displayEvolutionChain(chain) {
     contentElement.replaceChildren();
-
-    const tree = createEvolutionNode(chain);
+    const imageTasks = [];
+    const tree = createEvolutionNode(chain, imageTasks);
     contentElement.appendChild(tree);
+    await Promise.all(imageTasks);
 }
 
 export function showEvolutionModal() {

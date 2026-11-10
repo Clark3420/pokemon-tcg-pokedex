@@ -734,7 +734,8 @@ button, input, select { font: inherit; }
 
 
 /* Animated Poké Ball loading indicator. */
-#loading-indicator .pokeball-loader {
+#loading-indicator .pokeball-loader,
+.modal-artwork-loading .pokeball-loader {
     position: relative;
     width: 58px;
     height: 58px;
@@ -753,7 +754,8 @@ button, input, select { font: inherit; }
     box-shadow: 0 5px 16px rgb(0 0 0 / 28%), 0 0 18px rgb(239 68 68 / 20%);
     animation: pokeball-loading 1.15s ease-in-out infinite;
 }
-#loading-indicator .pokeball-loader-center {
+#loading-indicator .pokeball-loader-center,
+.modal-artwork-loading .pokeball-loader-center {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -772,5 +774,6 @@ button, input, select { font: inherit; }
     75% { transform: rotate(12deg) translateY(-3px); }
 }
 @media (prefers-reduced-motion: reduce) {
-    #loading-indicator .pokeball-loader { animation: none; }
+    #loading-indicator .pokeball-loader,
+.modal-artwork-loading .pokeball-loader { animation: none; }
 }

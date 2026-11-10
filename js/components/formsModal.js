@@ -3,6 +3,39 @@ import { navigateToPokemon, getCurrentPokemonId } from "../features/navigation.j
 
 const modalElement = document.getElementById("forms-modal");
 const contentElement = document.getElementById("forms-content");
+const loadingElement = document.getElementById("forms-loading");
+const modalBodyElement = modalElement.querySelector(".modal-body");
+const introElement = modalElement.querySelector(".forms-intro");
+
+export function setFormsModalLoading(isLoading) {
+    loadingElement.classList.toggle("d-none", !isLoading);
+    modalBodyElement.classList.toggle("modal-is-loading", isLoading);
+}
+
+async function loadImageCandidates(image, candidates) {
+    for (const candidate of candidates) {
+        try {
+            await new Promise((resolve, reject) => {
+                image.onload = resolve;
+                image.onerror = reject;
+                image.src = candidate;
+                if (image.complete && image.naturalWidth > 0) resolve();
+            });
+            if (typeof image.decode === "function") {
+                await image.decode().catch(() => {});
+            }
+            image.onload = null;
+            image.onerror = null;
+            return;
+        } catch {
+            image.onload = null;
+            image.onerror = null;
+        }
+    }
+
+    image.classList.add("form-image-missing");
+    image.removeAttribute("src");
+}
 
 // Keep modal focus predictable without authored ARIA attributes.
 let modalOpener = null;
@@ -61,7 +94,7 @@ function titleCase(value) {
     return String(value).replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-export function displayPokemonForms(forms) {
+export async function displayPokemonForms(forms) {
     contentElement.replaceChildren();
     const fragment = document.createDocumentFragment();
 
@@ -78,22 +111,13 @@ export function displayPokemonForms(forms) {
             ? form.imageCandidates
             : [form.image].filter(Boolean);
         image.alt = `${formatPokemonName(form.name)} ${form.formName ? titleCase(form.formName) + " form " : ""}artwork`;
-        image.loading = "lazy";
+        image.loading = "eager";
         image.decoding = "async";
-        let imageCandidateIndex = 0;
-        image.onerror = () => {
-            imageCandidateIndex += 1;
-            if (imageCandidateIndex < imageCandidates.length) {
-                image.src = imageCandidates[imageCandidateIndex];
-                return;
-            }
-
-            image.onerror = null;
+        if (imageCandidates.length) {
+            image.dataset.imageCandidates = JSON.stringify(imageCandidates);
+        } else {
             image.classList.add("form-image-missing");
-            image.removeAttribute("src");
-        };
-        if (imageCandidates.length) image.src = imageCandidates[0];
-        else image.classList.add("form-image-missing");
+        }
         artworkFrame.appendChild(image);
 
         const name = document.createElement("strong");
@@ -142,6 +166,13 @@ export function displayPokemonForms(forms) {
     });
 
     contentElement.appendChild(fragment);
+    const imageTasks = [...contentElement.querySelectorAll("img")].map((image) => {
+        let candidates = [];
+        try { candidates = JSON.parse(image.dataset.imageCandidates || "[]"); } catch { candidates = []; }
+        delete image.dataset.imageCandidates;
+        return candidates.length ? loadImageCandidates(image, candidates) : Promise.resolve();
+    });
+    await Promise.all(imageTasks);
 }
 
 export function showFormsModal() {

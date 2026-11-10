@@ -290,3 +290,71 @@
         font-size: .8rem;
     }
 }
+
+/* Match the Pokémon Forms modal backdrop to the Evolution Chain modal. */
+#forms-modal .forms-modal-content {
+    position: relative;
+    isolation: isolate;
+    background-color: #10231f;
+    background-image:
+        linear-gradient(180deg, rgb(7 16 25 / 62%) 0%, rgb(8 18 26 / 28%) 35%, rgb(7 16 25 / 50%) 100%),
+        url("../assets/backgrounds/evolution-sanctuary.svg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-color: rgb(105 190 230 / 72%);
+    box-shadow:
+        0 28px 90px rgb(0 0 0 / 68%),
+        0 0 0 1px rgb(255 255 255 / 8%) inset,
+        0 0 32px rgb(56 189 248 / 12%);
+}
+
+#forms-modal .modal-header {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(100deg, rgb(8 19 32 / 88%), rgb(18 34 48 / 66%));
+    border-bottom: 1px solid rgb(191 219 254 / 34%);
+    backdrop-filter: blur(5px);
+}
+
+#forms-modal .modal-title {
+    color: #fff8df;
+    text-shadow: 0 2px 12px rgb(0 0 0 / 75%);
+}
+
+#forms-modal .modal-body {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(180deg, rgb(5 14 24 / 10%), rgb(5 14 24 / 25%));
+}
+
+#forms-modal .forms-intro {
+    color: #e2eaf5;
+    text-shadow: 0 1px 8px rgb(0 0 0 / 80%);
+}
+
+#forms-modal .form-option-card {
+    background: linear-gradient(155deg, rgb(24 43 59 / 88%), rgb(9 22 34 / 91%));
+    border-color: rgb(147 197 220 / 48%);
+    box-shadow:
+        0 12px 28px rgb(0 0 0 / 42%),
+        0 0 0 1px rgb(255 255 255 / 8%) inset;
+    backdrop-filter: blur(3px);
+}
+
+#forms-modal .form-option-card:hover {
+    border-color: #67e8f9;
+    box-shadow:
+        0 14px 30px rgb(0 0 0 / 48%),
+        0 0 22px rgb(34 211 238 / 22%);
+}
+
+@media (max-width: 600px) {
+    #forms-modal .forms-modal-content {
+        background-position: center;
+    }
+
+    #forms-modal .modal-body {
+        background: linear-gradient(180deg, rgb(5 14 24 / 25%), rgb(5 14 24 / 48%));
+    }
+}
