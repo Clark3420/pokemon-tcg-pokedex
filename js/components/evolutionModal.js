@@ -108,7 +108,7 @@ function createEvolutionNode(pokemon) {
 
     card.addEventListener("click", async () => {
         await hideModalAndWait();
-        await navigateToPokemon(pokemon.id);
+        await navigateToPokemon(pokemon.id, 1);
     });
 
     node.appendChild(card);

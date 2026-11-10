@@ -376,8 +376,52 @@ window.addEventListener("pokemonformselected", async (event) => {
     const targetPokemonId = Number(form.pokemonId ?? form.id);
     const currentPokemonId = Number(currentPokemonForForms.id);
     if (Number.isSafeInteger(targetPokemonId) && targetPokemonId > 0 && targetPokemonId !== currentPokemonId) {
-        await navigateToPokemon(targetPokemonId);
+        await navigateToPokemon(targetPokemonId, 1);
         return;
+    }
+
+    // Keep the same loading experience when switching between forms of the
+    // current Pokémon, even though this path updates the card in place.
+    const loadingIndicator = document.getElementById("loading-indicator");
+    const pokemonCard = document.getElementById("pokemon-card");
+    if (loadingIndicator && pokemonCard) {
+        loadingIndicator.classList.remove("d-none");
+        loadingIndicator.classList.add("loading-compact");
+        const loadingText = loadingIndicator.querySelector("p");
+        if (loadingText) loadingText.textContent = "Loading Pokémon form...";
+        pokemonCard.classList.add("card-is-loading");
+    }
+
+    try {
+        const candidates = Array.isArray(form.imageCandidates) && form.imageCandidates.length
+            ? form.imageCandidates.filter(Boolean)
+            : [form.image].filter(Boolean);
+        if (candidates.length) {
+            const loadedImage = await new Promise((resolve) => {
+                let index = 0;
+                const attempt = () => {
+                    if (index >= candidates.length) { resolve(null); return; }
+                    const image = new Image();
+                    image.onload = async () => {
+                        try { if (image.decode) await image.decode(); } catch { /* loaded image remains usable */ }
+                        resolve({ src: candidates[index] });
+                    };
+                    image.onerror = () => { index += 1; attempt(); };
+                    image.src = candidates[index];
+                    if (image.complete && image.naturalWidth > 0) {
+                        image.onload();
+                    }
+                };
+                attempt();
+            });
+            if (loadedImage) form._loadedArtworkSrc = loadedImage.src;
+        }
+    } finally {
+        if (loadingIndicator) {
+            loadingIndicator.classList.add("d-none");
+            loadingIndicator.classList.remove("loading-compact");
+        }
+        pokemonCard?.classList.remove("card-is-loading");
     }
 
     const typeColors = {
@@ -394,9 +438,11 @@ window.addEventListener("pokemonformselected", async (event) => {
     ["pokemon-image", "back-pokemon-image"].forEach((id) => {
         const image = document.getElementById(id);
         if (image && form.image) {
-            const candidates = Array.isArray(form.imageCandidates) && form.imageCandidates.length
-                ? form.imageCandidates
-                : [form.image];
+            const candidates = form._loadedArtworkSrc
+                ? [form._loadedArtworkSrc]
+                : Array.isArray(form.imageCandidates) && form.imageCandidates.length
+                    ? form.imageCandidates
+                    : [form.image];
             let candidateIndex = 0;
             image.onerror = () => {
                 candidateIndex += 1;

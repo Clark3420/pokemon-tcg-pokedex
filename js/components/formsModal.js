@@ -125,7 +125,7 @@ export function displayPokemonForms(forms) {
 
             const targetPokemonId = Number(form.pokemonId ?? form.id);
             if (Number.isSafeInteger(targetPokemonId) && targetPokemonId > 0) {
-                await navigateToPokemon(targetPokemonId);
+                await navigateToPokemon(targetPokemonId, 1);
             }
         });
         fragment.appendChild(card);
