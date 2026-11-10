@@ -1,5 +1,5 @@
 import { formatPokemonName } from "../utils/formatters.js";
-import { navigateToPokemon } from "../features/navigation.js";
+import { navigateToPokemon, getCurrentPokemonId } from "../features/navigation.js";
 
 const modalElement = document.getElementById("forms-modal");
 const contentElement = document.getElementById("forms-content");
@@ -117,15 +117,25 @@ export function displayPokemonForms(forms) {
 
         card.append(artworkFrame, name, id, typeList, tag);
         card.addEventListener("click", async () => {
-            await hideModalAndWait();
+            const targetPokemonId = Number(form.pokemonId ?? form.id);
+            const currentPokemonId = Number(getCurrentPokemonId());
+
+            if (
+                !form.formResourceName &&
+                Number.isSafeInteger(targetPokemonId) &&
+                targetPokemonId === currentPokemonId
+            ) return;
+
             if (form.formResourceName) {
                 window.dispatchEvent(new CustomEvent("pokemonformselected", { detail: { form } }));
+                await hideModalAndWait();
                 return;
             }
 
-            const targetPokemonId = Number(form.pokemonId ?? form.id);
+            await hideModalAndWait();
             if (Number.isSafeInteger(targetPokemonId) && targetPokemonId > 0) {
-                await navigateToPokemon(targetPokemonId, 1);
+                const direction = targetPokemonId > currentPokemonId ? 1 : -1;
+                await navigateToPokemon(targetPokemonId, direction);
             }
         });
         fragment.appendChild(card);

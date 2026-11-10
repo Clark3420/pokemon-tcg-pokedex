@@ -2,6 +2,7 @@ import {
     setNavigationCollection,
     getNavigationCollection,
     navigateToPokemon,
+    getCurrentPokemonId,
     invalidatePendingNavigation,
 } from "./features/navigation.js";
 
@@ -29,7 +30,128 @@ const pokemonCard = document.getElementById("pokemon-card");
 const statusMessage = document.getElementById("status-message");
 
 const regionFilter = document.getElementById("region-filter");
+const regionFilterTrigger = document.getElementById("region-filter-trigger");
+const regionFilterMenu = document.getElementById("region-filter-menu");
+const regionFilterDropdown = document.getElementById("region-filter-dropdown");
 const typeFilter = document.getElementById("type-filter");
+const typeFilterTrigger = document.getElementById("type-filter-trigger");
+const typeFilterMenu = document.getElementById("type-filter-menu");
+const typeFilterDropdown = document.getElementById("type-filter-dropdown");
+const TYPE_FILTER_COLORS = {
+    all: "#cbd5e1", normal: "#A8A77A", fire: "#EE8130", water: "#6390F0",
+    electric: "#F7D02C", grass: "#7AC74C", ice: "#96D9D6", fighting: "#C22E28",
+    poison: "#A33EA1", ground: "#E2BF65", flying: "#A98FF3", psychic: "#F95587",
+    bug: "#A6B91A", rock: "#B6A136", ghost: "#735797", dragon: "#6F35FC",
+    dark: "#705746", steel: "#B7B7CE", fairy: "#D685AD"
+};
+
+function syncRegionFilterDropdown() {
+    const selected = regionFilter.selectedOptions[0];
+    if (selected) {
+        regionFilterTrigger.textContent = selected.textContent;
+        const chevron = document.createElement("span");
+        chevron.className = "type-filter-chevron";
+        regionFilterTrigger.append(chevron);
+    }
+    regionFilterMenu.querySelectorAll(".type-filter-option").forEach((button) => {
+        const isSelected = button.dataset.value === regionFilter.value;
+        button.classList.toggle("is-selected", isSelected);
+        button.disabled = regionFilter.disabled;
+    });
+    regionFilterTrigger.disabled = regionFilter.disabled;
+}
+
+function closeRegionFilterMenu() {
+    regionFilterMenu.classList.add("d-none");
+    regionFilterTrigger.classList.remove("is-open");
+}
+
+function initializeRegionFilterDropdown() {
+    [...regionFilter.options].forEach((option) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "type-filter-option region-filter-option";
+        button.textContent = option.textContent;
+        button.dataset.value = option.value;
+        button.addEventListener("click", () => {
+            if (regionFilter.disabled || regionFilter.value === option.value) {
+                closeRegionFilterMenu();
+                return;
+            }
+            regionFilter.value = option.value;
+            syncRegionFilterDropdown();
+            closeRegionFilterMenu();
+            regionFilter.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+        regionFilterMenu.append(button);
+    });
+    regionFilterTrigger.addEventListener("click", () => {
+        if (regionFilter.disabled) return;
+        const willOpen = regionFilterMenu.classList.contains("d-none");
+        regionFilterMenu.classList.toggle("d-none", !willOpen);
+        regionFilterTrigger.classList.toggle("is-open", willOpen);
+    });
+    document.addEventListener("click", (event) => {
+        if (!regionFilterDropdown.contains(event.target)) closeRegionFilterMenu();
+    });
+    regionFilter.addEventListener("change", syncRegionFilterDropdown);
+    syncRegionFilterDropdown();
+}
+
+function syncTypeFilterDropdown() {
+    const selected = typeFilter.selectedOptions[0];
+    if (selected) {
+        typeFilterTrigger.textContent = selected.textContent;
+        const chevron = document.createElement("span");
+        chevron.className = "type-filter-chevron";
+        typeFilterTrigger.append(chevron);
+    }
+    typeFilterMenu.querySelectorAll(".type-filter-option").forEach((button) => {
+        const isSelected = button.dataset.value === typeFilter.value;
+        button.classList.toggle("is-selected", isSelected);
+        button.disabled = typeFilter.disabled;
+    });
+    typeFilterTrigger.disabled = typeFilter.disabled;
+}
+
+function closeTypeFilterMenu() {
+    typeFilterMenu.classList.add("d-none");
+    typeFilterTrigger.classList.remove("is-open");
+}
+
+function initializeTypeFilterDropdown() {
+    [...typeFilter.options].forEach((option) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "type-filter-option";
+        button.textContent = option.textContent;
+        button.dataset.value = option.value;
+        button.style.setProperty("--type-color", TYPE_FILTER_COLORS[option.value] || "#cbd5e1");
+        button.addEventListener("click", () => {
+            if (typeFilter.disabled || typeFilter.value === option.value) {
+                closeTypeFilterMenu();
+                return;
+            }
+            typeFilter.value = option.value;
+            syncTypeFilterDropdown();
+            closeTypeFilterMenu();
+            typeFilter.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+        typeFilterMenu.append(button);
+    });
+    typeFilterTrigger.addEventListener("click", () => {
+        if (typeFilter.disabled) return;
+        const willOpen = typeFilterMenu.classList.contains("d-none");
+        typeFilterMenu.classList.toggle("d-none", !willOpen);
+        typeFilterTrigger.classList.toggle("is-open", willOpen);
+    });
+    document.addEventListener("click", (event) => {
+        if (!typeFilterDropdown.contains(event.target)) closeTypeFilterMenu();
+    });
+    typeFilter.addEventListener("change", syncTypeFilterDropdown);
+    syncTypeFilterDropdown();
+}
+
 const randomButton = document.getElementById("random-button");
 const evolutionButton = document.getElementById("evolution-button");
 const formsButton = document.getElementById("forms-button");
@@ -38,6 +160,7 @@ let evolutionRequestInProgress = false;
 let filterRequestInProgress = false;
 let currentFormsRequestId = 0;
 let currentPokemonForForms = null;
+let currentDisplayedFormResourceName = null;
 let formsRequestInProgress = false;
 
 function showError(message) {
@@ -98,6 +221,9 @@ async function searchPokemon(identifier) {
     await navigateToPokemon(identifier);
 }
 
+initializeRegionFilterDropdown();
+initializeTypeFilterDropdown();
+
 searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     hideSearchSuggestions();
@@ -110,6 +236,7 @@ searchForm.addEventListener("submit", async (event) => {
     }
     regionFilter.value = "all";
     typeFilter.value = "all";
+    syncTypeFilterDropdown();
 
     await searchPokemon(query);
 });
@@ -236,6 +363,7 @@ async function applyFilters() {
     filterRequestInProgress = true;
     regionFilter.disabled = true;
     typeFilter.disabled = true;
+    syncTypeFilterDropdown();
     randomButton.disabled = true;
 
     clearError();
@@ -283,6 +411,7 @@ async function applyFilters() {
         filterRequestInProgress = false;
         regionFilter.disabled = false;
         typeFilter.disabled = false;
+        syncTypeFilterDropdown();
         randomButton.disabled = false;
     }
 }
@@ -294,7 +423,7 @@ function handleFilterChange() {
 regionFilter.addEventListener("change", handleFilterChange);
 typeFilter.addEventListener("change", handleFilterChange);
 
-randomButton.addEventListener("click", () => {
+randomButton.addEventListener("click", async () => {
     const collection = getNavigationCollection();
 
     if (collection.length === 0) {
@@ -303,13 +432,23 @@ randomButton.addEventListener("click", () => {
         return;
     }
 
+    const currentPokemonId = getCurrentPokemonId();
+    const availableIds = collection.length > 1
+        ? collection.filter((id) => Number(id) !== Number(currentPokemonId))
+        : collection;
+
     const randomIndex = Math.floor(
-        Math.random() * collection.length
+        Math.random() * availableIds.length
     );
+    const randomPokemonId = availableIds[randomIndex];
+    const direction = Number(randomPokemonId) > Number(currentPokemonId) ? 1 : -1;
 
-    const randomPokemonId = collection[randomIndex];
-
-    navigateToPokemon(randomPokemonId);
+    randomButton.disabled = true;
+    try {
+        await navigateToPokemon(randomPokemonId, direction);
+    } finally {
+        randomButton.disabled = false;
+    }
 });
 
 evolutionButton.addEventListener("click", async () => {
@@ -346,6 +485,7 @@ window.addEventListener("pokemonloaded", async (event) => {
 
     const requestId = ++currentFormsRequestId;
     currentPokemonForForms = pokemon;
+    currentDisplayedFormResourceName = pokemon.name;
     formsButton.classList.remove("d-none");
     formsButton.disabled = true;
     formsButton.title = "Checking whether this Pokémon has alternate forms.";
@@ -375,8 +515,18 @@ window.addEventListener("pokemonformselected", async (event) => {
 
     const targetPokemonId = Number(form.pokemonId ?? form.id);
     const currentPokemonId = Number(currentPokemonForForms.id);
+    const targetFormResourceName = form.formResourceName || form.name;
+
+    if (
+        Number.isSafeInteger(targetPokemonId) &&
+        targetPokemonId > 0 &&
+        targetPokemonId === currentPokemonId &&
+        targetFormResourceName === currentDisplayedFormResourceName
+    ) return;
+
     if (Number.isSafeInteger(targetPokemonId) && targetPokemonId > 0 && targetPokemonId !== currentPokemonId) {
-        await navigateToPokemon(targetPokemonId, 1);
+        const direction = targetPokemonId > currentPokemonId ? 1 : -1;
+        await navigateToPokemon(targetPokemonId, direction);
         return;
     }
 
@@ -423,6 +573,8 @@ window.addEventListener("pokemonformselected", async (event) => {
         }
         pokemonCard?.classList.remove("card-is-loading");
     }
+
+    currentDisplayedFormResourceName = targetFormResourceName;
 
     const typeColors = {
         normal: "#A8A77A", fire: "#EE8130", water: "#6390F0", electric: "#F7D02C",

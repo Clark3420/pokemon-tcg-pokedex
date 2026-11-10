@@ -1,5 +1,5 @@
 import { formatPokemonName } from "../utils/formatters.js";
-import { navigateToPokemon } from "../features/navigation.js";
+import { navigateToPokemon, getCurrentPokemonId } from "../features/navigation.js";
 
 const modalElement = document.getElementById("evolution-modal");
 const contentElement = document.getElementById("evolution-content");
@@ -107,8 +107,19 @@ function createEvolutionNode(pokemon) {
     card.append(image, name, id);
 
     card.addEventListener("click", async () => {
+        const selectedPokemonId = Number(pokemon.id);
+        const currentPokemonId = Number(getCurrentPokemonId());
+
+        // Selecting the Pokémon already on the main card only closes the modal.
+        // Do not trigger loading, navigation, or an artwork reload.
+        if (selectedPokemonId === currentPokemonId) {
+            await hideModalAndWait();
+            return;
+        }
+
         await hideModalAndWait();
-        await navigateToPokemon(pokemon.id, 1);
+        const direction = selectedPokemonId > currentPokemonId ? 1 : -1;
+        await navigateToPokemon(selectedPokemonId, direction);
     });
 
     node.appendChild(card);

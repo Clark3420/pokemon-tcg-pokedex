@@ -212,6 +212,10 @@ export function getNavigationCollection() {
     return [...navigationIds];
 }
 
+export function getCurrentPokemonId() {
+    return currentPokemonId;
+}
+
 export function setCurrentPokemonId(id) {
     currentPokemonId = Number(id);
     currentIndex = navigationIds.indexOf(currentPokemonId);

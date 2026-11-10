@@ -113,7 +113,7 @@
                         Region
                     </label>
 
-                    <select id="region-filter" class="form-select">
+                    <select id="region-filter" class="form-select d-none" tabindex="-1">
                         <option value="all">All Regions</option>
                         <option value="kanto">Kanto</option>
                         <option value="johto">Johto</option>
@@ -126,6 +126,10 @@
                         <option value="hisui">Hisui</option>
                         <option value="paldea">Paldea</option>
                     </select>
+                    <div class="type-filter-dropdown region-filter-dropdown" id="region-filter-dropdown">
+                        <button type="button" class="type-filter-trigger" id="region-filter-trigger">All Regions <span class="type-filter-chevron"></span></button>
+                        <div class="type-filter-menu d-none" id="region-filter-menu"></div>
+                    </div>
                 </div>
 
                 <div class="col-12 col-sm-4 col-xl-4">
@@ -133,7 +137,7 @@
                         Pokémon Type
                     </label>
 
-                    <select id="type-filter" class="form-select">
+                    <select id="type-filter" class="form-select d-none" tabindex="-1">
                         <option value="all">All Types</option>
                         <option value="normal">Normal</option>
                         <option value="fire">Fire</option>
@@ -154,6 +158,10 @@
                         <option value="steel">Steel</option>
                         <option value="fairy">Fairy</option>
                     </select>
+                    <div class="type-filter-dropdown" id="type-filter-dropdown">
+                        <button type="button" class="type-filter-trigger" id="type-filter-trigger">All Types <span class="type-filter-chevron"></span></button>
+                        <div class="type-filter-menu d-none" id="type-filter-menu"></div>
+                    </div>
                 </div>
 
                 <div class="col-12 col-sm-4 col-xl-4">
