@@ -4,6 +4,7 @@ import {
     navigateToPokemon,
     getCurrentPokemonId,
     invalidatePendingNavigation,
+    navigateByOffset,
 } from "./features/navigation.js";
 
 import { getFilteredPokemon } from "./features/collection.js";
@@ -34,6 +35,27 @@ const errorMessage = document.getElementById("error-message");
 const loadingIndicator = document.getElementById("loading-indicator");
 const pokemonCard = document.getElementById("pokemon-card");
 const statusMessage = document.getElementById("status-message");
+
+// Use the left and right arrow keys to navigate Pokémon cards.
+// Ignore editable controls and open dialogs so keyboard interaction remains
+// predictable while searching or using modal content.
+document.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+
+    const target = event.target;
+    const isEditable = target instanceof HTMLElement && (
+        target.isContentEditable ||
+        target.matches("input, textarea, select, [contenteditable='true']")
+    );
+    if (isEditable) return;
+
+    const openModal = document.querySelector(".modal.show");
+    if (openModal) return;
+
+    event.preventDefault();
+    navigateByOffset(event.key === "ArrowRight" ? 1 : -1);
+});
 
 const regionFilter = document.getElementById("region-filter");
 const regionFilterTrigger = document.getElementById("region-filter-trigger");

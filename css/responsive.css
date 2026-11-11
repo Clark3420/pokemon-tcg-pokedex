@@ -358,3 +358,156 @@
         background: linear-gradient(180deg, rgb(5 14 24 / 25%), rgb(5 14 24 / 48%));
     }
 }
+
+
+/* Responsive dashboard and header refinements */
+@media (max-width: 575.98px) {
+    .app-header .container {
+        padding: 1.5rem 1rem 1.25rem;
+    }
+
+    .app-title {
+        font-size: clamp(1.65rem, 7.8vw, 2.2rem);
+        line-height: 1.08;
+        overflow-wrap: anywhere;
+    }
+
+    .app-subtitle {
+        margin-top: .45rem;
+        font-size: .82rem;
+    }
+
+    .search-form {
+        width: 100%;
+    }
+
+    .search-form .input-group {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .search-form .form-control {
+        flex: 1 1 auto;
+        width: 1%;
+        min-width: 0;
+    }
+
+    .search-form .btn {
+        flex: 0 0 auto;
+    }
+
+    .collection-dashboard {
+        padding: .85rem;
+        border-radius: 18px;
+    }
+
+    .dashboard-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .55rem;
+        margin-bottom: .85rem;
+    }
+
+    .dashboard-heading h2 {
+        font-size: 1.12rem;
+        line-height: 1.2;
+    }
+
+    .dashboard-total {
+        align-self: flex-start;
+        margin: 0;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: minmax(0, 1fr);
+        gap: .65rem;
+    }
+
+    .dashboard-stat,
+    .dashboard-progress-stat {
+        width: 100%;
+        min-width: 0;
+        padding: .85rem;
+        gap: .75rem;
+        align-items: center;
+    }
+
+    .dashboard-stat-icon {
+        flex: 0 0 38px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .dashboard-stat-copy {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .dashboard-stat-label {
+        font-size: .72rem;
+        line-height: 1.35;
+    }
+
+    .dashboard-stat-copy > strong,
+    .progress-label-row strong {
+        font-size: 1.35rem;
+    }
+
+    .dashboard-stat-copy small {
+        display: block;
+        font-size: .68rem;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .progress-label-row {
+        align-items: center;
+        flex-wrap: wrap;
+        row-gap: .15rem;
+    }
+
+    .collection-progress {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .app-header .container {
+        padding-inline: .75rem;
+    }
+
+    .collection-dashboard {
+        padding: .7rem;
+    }
+
+    .dashboard-stat,
+    .dashboard-progress-stat {
+        padding: .7rem;
+        gap: .6rem;
+    }
+
+    .dashboard-stat-icon {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+    }
+}
+
+/* Restore the two-column dashboard when there is enough room. */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-stat,
+    .dashboard-progress-stat {
+        min-width: 0;
+    }
+
+    .dashboard-stat-copy,
+    .progress-stat-copy {
+        min-width: 0;
+    }
+}
