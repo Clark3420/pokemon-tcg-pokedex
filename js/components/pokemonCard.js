@@ -29,6 +29,48 @@ const TYPE_COLORS = {
     fairy: "#D685AD",
 };
 
+
+const TYPE_IDS = {
+    normal: 1, fighting: 2, flying: 3, poison: 4, ground: 5,
+    rock: 6, bug: 7, ghost: 8, steel: 9, fire: 10, water: 11,
+    grass: 12, electric: 13, psychic: 14, ice: 15, dragon: 16,
+    dark: 17, fairy: 18,
+};
+
+const decodedTypeBadgeUrls = new Set();
+
+export async function preloadPokemonTypeBadges(types = []) {
+    const names = types.map((entry) =>
+        typeof entry === "string" ? entry.toLowerCase() : entry?.type?.name?.toLowerCase()
+    ).filter(Boolean);
+
+    await Promise.all(names.map(async (typeName) => {
+        const typeId = TYPE_IDS[typeName];
+        if (!typeId) return;
+
+        const url = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/${typeId}.png`;
+        if (decodedTypeBadgeUrls.has(url)) return;
+
+        await new Promise((resolve) => {
+            const image = new Image();
+            const finish = () => resolve();
+            image.onload = async () => {
+                try {
+                    if (typeof image.decode === "function") await image.decode();
+                    decodedTypeBadgeUrls.add(url);
+                } catch {
+                    // A loaded image remains usable if decode() is unsupported.
+                    if (image.naturalWidth > 0) decodedTypeBadgeUrls.add(url);
+                }
+                finish();
+            };
+            image.onerror = finish;
+            image.src = url;
+            if (image.complete && image.naturalWidth > 0) image.onload();
+        });
+    }));
+}
+
 function getElement(id) {
     const element = document.getElementById(id);
 
@@ -44,12 +86,16 @@ function renderTypes(types) {
     container.replaceChildren();
 
     types.forEach(({ type }) => {
-        const badge = document.createElement("span");
+        const typeName = type.name.toLowerCase();
+        const typeId = TYPE_IDS[typeName];
+        const badge = document.createElement("img");
 
         badge.className = "type-badge";
-        badge.textContent = type.name;
-        badge.style.backgroundColor =
-            TYPE_COLORS[type.name] || "#64748b";
+        badge.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/${typeId}.png`;
+        badge.alt = `${typeName} type`;
+        badge.title = `${typeName.charAt(0).toUpperCase()}${typeName.slice(1)}`;
+        badge.loading = "eager";
+        badge.decoding = "sync";
 
         container.appendChild(badge);
     });

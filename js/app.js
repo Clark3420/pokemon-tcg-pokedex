@@ -20,6 +20,7 @@ import "./features/cardFlip.js";
 import "./features/swipe.js";
 import { getAllPokemonIds, getPokemonSuggestions } from "./api/pokemonService.js";
 import { getPokemonForms } from "./api/formsService.js";
+import { preloadPokemonTypeBadges } from "./components/pokemonCard.js";
 import {
     displayPokemonForms,
     showFormsModal,
@@ -550,6 +551,7 @@ window.addEventListener("pokemonformselected", async (event) => {
     }
 
     try {
+        await preloadPokemonTypeBadges(form.types || []);
         const candidates = Array.isArray(form.imageCandidates) && form.imageCandidates.length
             ? form.imageCandidates.filter(Boolean)
             : [form.image].filter(Boolean);
@@ -620,10 +622,20 @@ window.addEventListener("pokemonformselected", async (event) => {
     const typesContainer = document.getElementById("pokemon-types");
     typesContainer.replaceChildren();
     form.types.forEach((type) => {
-        const badge = document.createElement("span");
+        const typeIds = {
+            normal: 1, fighting: 2, flying: 3, poison: 4, ground: 5,
+            rock: 6, bug: 7, ghost: 8, steel: 9, fire: 10, water: 11,
+            grass: 12, electric: 13, psychic: 14, ice: 15, dragon: 16,
+            dark: 17, fairy: 18,
+        };
+        const typeName = type.toLowerCase();
+        const badge = document.createElement("img");
         badge.className = "type-badge";
-        badge.textContent = type;
-        badge.style.backgroundColor = typeColors[type] || "#64748b";
+        badge.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/${typeIds[typeName]}.png`;
+        badge.alt = `${typeName} type`;
+        badge.title = `${typeName.charAt(0).toUpperCase()}${typeName.slice(1)}`;
+        badge.loading = "eager";
+        badge.decoding = "sync";
         typesContainer.appendChild(badge);
     });
     const firstType = form.types[0] || "normal";

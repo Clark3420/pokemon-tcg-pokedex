@@ -208,18 +208,19 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: 0.4rem;
+    min-height: 1.65rem;
+    margin: 0.55rem 0 0.45rem;
 }
 
 .type-badge {
-    display: inline-block;
-    padding: 0.25rem 0.7rem;
-    border: 1px solid rgb(0 0 0 / 15%);
-    border-radius: 20px;
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
+    display: block;
+    width: auto;
+    height: 1.35rem;
+    max-width: 6.5rem;
+    object-fit: contain;
+    flex: 0 0 auto;
 }
 
 .pokemon-measurements {
@@ -901,5 +902,86 @@
 @media (max-width: 600px) {
     #evolution-modal .modal-content {
         height: min(620px, calc(100dvh - 1rem));
+    }
+}
+
+
+/* Blue Poké Ball design for the reverse side of the Pokémon card. */
+.pokemon-card-back {
+    background:
+        radial-gradient(ellipse at 18% 12%, rgb(96 165 250 / 30%), transparent 42%),
+        linear-gradient(145deg, #1764b5 0%, #104783 48%, #092d5c 100%);
+    border-color: #78b9f2;
+}
+
+.pokemon-card-back .card-frame {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-color: rgb(191 219 254 / 58%);
+    background:
+        linear-gradient(145deg, rgb(96 165 250 / 12%), transparent 55%),
+        linear-gradient(160deg, #15569a 0%, #0c3c72 58%, #082b55 100%);
+}
+
+.pokemon-card-back .card-frame::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    width: 224px;
+    height: 224px;
+    right: -112px;
+    bottom: -112px;
+    border: 9px solid rgb(7 24 48 / 92%);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 50%,
+            #f8fafc 0 8%,
+            #172b45 8.5% 13%,
+            transparent 13.5%),
+        linear-gradient(
+            to bottom,
+            #ef4444 0 45%,
+            #172b45 45% 55%,
+            #f8fafc 55% 100%
+        );
+    box-shadow:
+        0 0 0 3px rgb(191 219 254 / 55%),
+        0 0 32px rgb(2 12 32 / 35%);
+    pointer-events: none;
+}
+
+.pokemon-card-back .card-frame > * {
+    position: relative;
+    z-index: 1;
+}
+
+.pokemon-card-back .card-frame > .pokemon-abilities {
+    z-index: 2;
+}
+
+.pokemon-card-back .card-back-artwork {
+    border-color: rgb(191 219 254 / 48%);
+    background: linear-gradient(145deg, rgb(7 30 62 / 45%), rgb(5 25 54 / 65%));
+}
+
+.pokemon-card-back .card-frame > h3 {
+    color: #eff6ff;
+    text-shadow: 0 2px 8px rgb(3 18 40 / 55%);
+}
+
+.pokemon-card-back .ability-item {
+    background: rgb(5 25 54 / 76%);
+    border-color: rgb(191 219 254 / 28%);
+    box-shadow: 0 5px 14px rgb(2 12 32 / 18%);
+    backdrop-filter: blur(3px);
+}
+
+@media (max-width: 480px) {
+    .pokemon-card-back .card-frame::before {
+        width: 194px;
+        height: 194px;
+        right: -97px;
+        bottom: -97px;
     }
 }
