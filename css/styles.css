@@ -31,7 +31,6 @@ body {
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
 }
-
 body::before {
     content: "";
     position: fixed;
@@ -48,7 +47,6 @@ body::before {
     background-size: 190px 190px, 230px 230px, 170px 170px, 210px 210px, 100% 100%;
     mask-image: linear-gradient(to bottom, black, rgb(0 0 0 / 65%) 70%, transparent);
 }
-
 body::after {
     content: "";
     position: fixed;
@@ -93,7 +91,6 @@ body[data-pokemon-type="normal"] { --type-atmosphere: rgb(148 163 184 / 19%); --
 @media (prefers-reduced-motion: reduce) {
     body::after { animation: none; }
 }
-
 button, input, select { font: inherit; }
 .app-header {
     position: relative;
@@ -113,7 +110,6 @@ button, input, select { font: inherit; }
 .search-form .input-group { padding: 5px; border: 1px solid rgb(255 255 255 / 10%); border-radius: 15px; background: rgb(255 255 255 / 5%); box-shadow: 0 14px 36px rgb(0 0 0 / 18%); }
 .search-form .form-control { min-height: 48px; border: 0; border-radius: 10px !important; background: #f8fafc; color: #172033; box-shadow: none; }
 .search-form .btn { min-width: 105px; margin-left: 5px !important; border-radius: 10px !important; font-weight: 800; }
-
 .search-form { position: relative; }
 .search-suggestions {
     position: absolute;
@@ -146,12 +142,10 @@ button, input, select { font: inherit; }
 .search-suggestion:focus-visible { background: rgb(239 68 68 / 20%); outline: none; }
 .search-suggestion-name { font-weight: 700; text-transform: capitalize; }
 .search-suggestion-id { color: #aab6ca; font-size: .78rem; white-space: nowrap; }
-
 .btn-danger { background: var(--accent); border-color: var(--accent); }
 .btn-danger:hover, .btn-danger:focus-visible { background: var(--accent-hover); border-color: var(--accent-hover); }
 .alert { max-width: 690px; margin-left: auto; margin-right: auto; border-radius: 12px; }
 .app-main { max-width: calc(var(--page-width) + 2rem); }
-
 .collection-dashboard { padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid var(--border-color); border-radius: 22px; background: linear-gradient(135deg, rgb(27 35 52 / 96%), rgb(18 24 37 / 96%)); box-shadow: 0 18px 50px rgb(0 0 0 / 16%); }
 .dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.1rem; }
 .dashboard-heading h2 { margin: 0; font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: 850; letter-spacing: -.025em; }
@@ -169,8 +163,6 @@ button, input, select { font: inherit; }
 .progress-label-row strong { font-size: 1.25rem; }
 .collection-progress { height: 7px; overflow: hidden; margin: .55rem 0 .4rem; border-radius: 999px; background: rgb(255 255 255 / 9%); }
 .collection-progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #facc15, #fb923c); box-shadow: 0 0 14px rgb(250 204 21 / 28%); transition: width .45s ease; }
-
-
 .card-actions {
     width: fit-content;
     max-width: 100%;
@@ -180,7 +172,6 @@ button, input, select { font: inherit; }
     align-items: center;
     text-align: center;
 }
-
 .filter-section {
     width: 100%;
     max-width: 900px;
@@ -239,8 +230,6 @@ button, input, select { font: inherit; }
     color: #f7f8fc;
     background: #151d30;
 }
-
-/* Custom Pokémon type filter with type-specific hover and selected colors. */
 .type-filter-dropdown { position: relative; width: 100%; }
 .type-filter-trigger {
     display: flex; align-items: center; justify-content: space-between; gap: .75rem;
@@ -272,8 +261,6 @@ button, input, select { font: inherit; }
 }
 .type-filter-option::before { content: ""; width: 8px; height: 8px; margin-right: .65rem; border-radius: 50%; background: var(--type-color, #94a3b8); box-shadow: 0 0 9px color-mix(in srgb, var(--type-color, #94a3b8) 65%, transparent); }
 .type-filter-option:disabled, .type-filter-trigger:disabled { opacity: .55; cursor: not-allowed; }
-
-/* Region dropdown shares the type dropdown design with neutral styling. */
 .region-filter-option:hover,
 .region-filter-option:focus-visible,
 .region-filter-option.is-selected {
@@ -286,8 +273,6 @@ button, input, select { font: inherit; }
     background: #94a3b8;
     box-shadow: none;
 }
-
-
 .filter-section .btn {
     min-height: 49px;
     border-radius: 13px;
@@ -302,7 +287,6 @@ button, input, select { font: inherit; }
 }
 .btn-outline-danger { --bs-btn-color: #ff8a8a; --bs-btn-border-color: rgb(239 68 68 / 65%); --bs-btn-hover-bg: #dc2626; --bs-btn-hover-border-color: #dc2626; }
 .btn-outline-warning { --bs-btn-color: #f6d77a; --bs-btn-border-color: rgb(246 207 112 / 50%); --bs-btn-hover-bg: #eab308; --bs-btn-hover-color: #171717; --bs-btn-hover-border-color: #eab308; }
-
 .pokemon-viewer { display: flex; align-items: center; justify-content: center; gap: clamp(1rem, 3vw, 2.5rem); width: 100%; margin: clamp(1.5rem, 4vw, 2.5rem) auto 0; }
 .pokemon-card-wrapper { width: 100%; max-width: 405px; min-width: 0; perspective: 1400px; }
 .navigation-button { display: flex; align-items: center; justify-content: center; flex: 0 0 48px; width: 48px; height: 48px; padding: 0 0 4px; border: 1px solid var(--border-color); border-radius: 50%; background: linear-gradient(145deg, #252e43, #171d2b); color: var(--text-primary); font-size: 2.1rem; line-height: 1; cursor: pointer; box-shadow: 0 8px 22px rgb(0 0 0 / 20%); transition: background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease, opacity .2s ease; transform: none; transform-origin: center; }
@@ -322,7 +306,6 @@ button, input, select { font: inherit; }
 .card-actions .btn { min-height: 46px; border-radius: 12px; padding-inline: 1.2rem !important; font-weight: 800; }
 #status-message { color: var(--text-secondary); min-height: 1.5rem; font-size: .88rem; }
 #loading-indicator { color: var(--text-secondary); }
-
 .modal-content { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 18px; box-shadow: 0 24px 70px rgb(0 0 0 / 35%); }
 .modal-header { border-bottom-color: var(--border-color); }
 .modal-footer { border-top-color: var(--border-color); }
@@ -337,7 +320,6 @@ button, input, select { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
-
 .pokemon-card-wrapper { position: relative; }
 #loading-indicator {
     position: absolute;
@@ -358,23 +340,17 @@ button, input, select { font: inherit; }
 #loading-indicator.d-none { display: none !important; }
 #loading-indicator .spinner-border { width: 1.6rem; height: 1.6rem; border-width: .18em; }
 #loading-indicator p { margin: 0 !important; font-size: .84rem; font-weight: 700; }
-
 .pokemon-card.card-is-loading {
     pointer-events: none;
     opacity: .88;
     transition: opacity .18s ease;
 }
 .pokemon-card.card-is-loading .pokemon-card-inner { transform: none !important; }
-
-
 #loading-indicator.loading-compact {
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
-
-
-/* Side preview cards participate in the same physical carousel motion. */
 .pokemon-preview-card {
     backface-visibility: hidden;
     transform-origin: center center;
@@ -403,7 +379,6 @@ button, input, select { font: inherit; }
 .pokemon-viewer.is-sliding-previous .pokemon-preview-next {
     animation: preview-next-recedes 460ms cubic-bezier(.4,0,.7,.2) both;
 }
-
 @keyframes preview-next-advances {
     0% {
         opacity: .78;
@@ -457,11 +432,6 @@ button, input, select { font: inherit; }
         transition: none !important;
     }
 }
-
-
-/* Explicit three-slot carousel handoff. The side previews travel toward the
-   center position while the old preview exits; content is refreshed only
-   after this movement has completed. */
 .pokemon-viewer .pokemon-preview-card {
     position: relative;
     z-index: 1;
@@ -547,9 +517,6 @@ button, input, select { font: inherit; }
         animation: none !important;
     }
 }
-
-
-/* Phase 1 / Step 2: clear, consistent loading and error feedback */
 #loading-indicator {
     z-index: 12;
     min-height: 150px;
@@ -595,9 +562,6 @@ button, input, select { font: inherit; }
     background: rgb(255 255 255 / 12%);
     color: inherit;
 }
-
-
-/* Friendly, visible search/API error panel */
 .pokemon-error-panel {
     display: flex;
     align-items: center;
@@ -632,9 +596,6 @@ button, input, select { font: inherit; }
     .pokemon-error-panel { align-items: flex-start; flex-wrap: wrap; }
     .pokemon-error-panel #retry-button { margin-left: 2.8rem !important; }
 }
-
-
-/* Keep the error message compact instead of stretching across the page. */
 #error-message.pokemon-error-panel {
     width: min(100%, 760px);
     margin-left: auto;
@@ -649,8 +610,6 @@ button, input, select { font: inherit; }
         max-width: 54ch;
     }
 }
-
-/* Keep modal close buttons visually clean when Bootstrap focuses them on open. */
 #evolution-modal .btn-close:focus,
 #evolution-modal .btn-close:focus-visible,
 #forms-modal .btn-close:focus,
@@ -658,8 +617,6 @@ button, input, select { font: inherit; }
     outline: none;
     box-shadow: none;
 }
-
-/* View Pokémon Forms: make the unavailable state deliberate and clearly distinct. */
 #forms-button:disabled,
 #forms-button.disabled {
     color: #94a3b8;
@@ -678,9 +635,6 @@ button, input, select { font: inherit; }
     border-color: rgb(148 163 184 / 28%);
     box-shadow: none;
 }
-
-
-/* Solid hover feedback for the enabled Pokémon Forms button. */
 #forms-button:not(:disabled):not(.disabled) {
     transition:
         background-color .18s ease,
@@ -705,8 +659,6 @@ button, input, select { font: inherit; }
 #forms-button:disabled:active {
     transform: none;
 }
-
-/* Solid hover feedback for the enabled Evolution button. */
 #evolution-button:not(:disabled):not(.disabled) {
     transition:
         background-color .18s ease,
@@ -731,9 +683,6 @@ button, input, select { font: inherit; }
 #evolution-button:disabled:active {
     transform: none;
 }
-
-
-/* Animated Poké Ball loading indicator. */
 #loading-indicator .pokeball-loader,
 .modal-artwork-loading .pokeball-loader {
     position: relative;

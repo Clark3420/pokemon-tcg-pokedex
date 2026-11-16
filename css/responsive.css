@@ -11,7 +11,6 @@
     .card-actions { gap: .65rem !important; }
     .card-actions .btn { flex: 1 1 210px; }
 }
-
 @media (max-width: 480px) {
     .app-title { letter-spacing: .045em; }
     .app-subtitle { font-size: .9rem; }
@@ -51,7 +50,6 @@
     .pokemon-measurements { font-size: .59rem; }
     .stat-row { grid-template-columns: 43px minmax(0, 1fr) 20px; font-size: .54rem; }
 }
-
 @media (min-width: 768px) {
     .pokemon-viewer { gap: clamp(.35rem, 1.5vw, 1.25rem); }
     .pokemon-card-wrapper { flex: 0 1 405px; }
@@ -60,29 +58,22 @@
     .pokemon-viewer { gap: .35rem; }
     .pokemon-card-wrapper { max-width: min(360px, 48vw); }
 }
-
-
-/* Phase 1 — mobile layout refinements */
 @media (max-width: 767.98px) {
     .app-main {
         padding-left: 1rem;
         padding-right: 1rem;
     }
-
     .app-header .container {
         padding-top: 2rem;
         padding-bottom: 1.5rem;
     }
-
     .dashboard-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
     .dashboard-progress-stat {
         grid-column: auto;
         min-width: 0;
     }
-
     .pokemon-viewer {
         display: grid;
         grid-template-columns: 38px minmax(0, 1fr) 38px;
@@ -90,27 +81,23 @@
         gap: .8rem;
         width: 100%;
     }
-
     .pokemon-card-wrapper {
         width: 100%;
         max-width: 405px;
         min-width: 0;
         justify-self: center;
     }
-
     .navigation-button {
         flex: none;
         width: 38px;
         height: 38px;
         justify-self: center;
     }
-
     .card-actions {
         display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: .65rem !important;
     }
-
     .card-actions .btn {
         min-width: 0;
         width: 100%;
@@ -118,79 +105,63 @@
         font-size: .85rem;
         line-height: 1.25;
     }
-
     #evolution-modal .modal-dialog,
     #forms-modal .modal-dialog {
         width: calc(100% - 1rem);
         max-width: none;
         margin: .5rem auto;
     }
-
     #evolution-modal .modal-content,
     #forms-modal .modal-content {
         max-height: calc(100dvh - 1rem);
     }
 }
-
 @media (max-width: 480px) {
     .app-main {
         padding-top: 1.25rem !important;
         padding-bottom: 1.5rem !important;
     }
-
     .app-header .container {
         padding-top: 1.5rem;
         padding-bottom: 1.25rem;
     }
-
     .app-header .text-center {
         margin-bottom: 1.25rem !important;
     }
-
     .eyebrow {
         font-size: .6rem;
         letter-spacing: .14em;
     }
-
     .app-title {
         font-size: clamp(1.8rem, 9vw, 2.45rem);
     }
-
     .search-form .input-group {
         gap: .25rem;
     }
-
     .search-form .form-control {
         font-size: .84rem;
     }
-
     .search-form .btn {
         min-width: 72px;
         padding-inline: .6rem;
     }
-
     .dashboard-heading {
         flex-wrap: wrap;
         gap: .45rem;
     }
-
     .dashboard-heading h2 {
         font-size: 1.08rem;
     }
-
     .dashboard-total {
         margin-left: 0;
     }
-
     .dashboard-stats {
         gap: .5rem;
     }
-
     .dashboard-stat {
         gap: .55rem;
         padding: .65rem;
     }
-
     .dashboard-stat-icon {
         flex-basis: 32px;
         width: 32px;
@@ -198,100 +169,79 @@
         border-radius: 10px;
         font-size: 1.1rem;
     }
-
     .dashboard-stat-label {
         font-size: .66rem;
     }
-
     .dashboard-stat-copy > strong,
     .progress-label-row strong {
         font-size: 1.15rem;
     }
-
     .dashboard-stat-copy small {
         font-size: .63rem;
     }
-
     .filter-section {
         padding: .8rem;
     }
-
     .pokemon-viewer {
         grid-template-columns: 32px minmax(0, 1fr) 32px;
         gap: .55rem;
     }
-
     .navigation-button {
         width: 32px;
         height: 32px;
         font-size: 1.55rem;
     }
-
     .pokemon-card-wrapper {
         max-width: 100%;
     }
-
     .card-actions {
         grid-template-columns: 1fr;
     }
-
     .card-actions .btn {
         min-height: 43px;
     }
-
     #status-message {
         font-size: .8rem;
     }
 }
-
 @media (max-width: 350px) {
     .dashboard-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
     .dashboard-stat {
         gap: .35rem;
         padding: .5rem;
     }
-
     .dashboard-stat-icon {
         flex-basis: 26px;
         width: 26px;
         height: 26px;
         font-size: .95rem;
     }
-
     .dashboard-stat-copy {
         min-width: 0;
     }
-
     .dashboard-stat-copy small {
         overflow-wrap: anywhere;
     }
-
     .pokemon-viewer {
         grid-template-columns: 28px minmax(0, 1fr) 28px;
         gap: .4rem;
     }
-
     .navigation-button {
         width: 28px;
         height: 28px;
         font-size: 1.35rem;
     }
-
     .search-form .form-control {
         padding-inline: .6rem;
         font-size: .78rem;
     }
-
     .search-form .btn {
         min-width: 64px;
         font-size: .8rem;
     }
 }
-
-/* Match the Pokémon Forms modal backdrop to the Evolution Chain modal. */
 #forms-modal .forms-modal-content {
     position: relative;
     isolation: isolate;
@@ -308,7 +258,6 @@
         0 0 0 1px rgb(255 255 255 / 8%) inset,
         0 0 32px rgb(56 189 248 / 12%);
 }
-
 #forms-modal .modal-header {
     position: relative;
     z-index: 1;
@@ -316,23 +265,19 @@
     border-bottom: 1px solid rgb(191 219 254 / 34%);
     backdrop-filter: blur(5px);
 }
-
 #forms-modal .modal-title {
     color: #fff8df;
     text-shadow: 0 2px 12px rgb(0 0 0 / 75%);
 }
-
 #forms-modal .modal-body {
     position: relative;
     z-index: 1;
     background: linear-gradient(180deg, rgb(5 14 24 / 10%), rgb(5 14 24 / 25%));
 }
-
 #forms-modal .forms-intro {
     color: #e2eaf5;
     text-shadow: 0 1px 8px rgb(0 0 0 / 80%);
 }
-
 #forms-modal .form-option-card {
     background: linear-gradient(155deg, rgb(24 43 59 / 88%), rgb(9 22 34 / 91%));
     border-color: rgb(147 197 220 / 48%);
@@ -341,90 +286,72 @@
         0 0 0 1px rgb(255 255 255 / 8%) inset;
     backdrop-filter: blur(3px);
 }
-
 #forms-modal .form-option-card:hover {
     border-color: #67e8f9;
     box-shadow:
         0 14px 30px rgb(0 0 0 / 48%),
         0 0 22px rgb(34 211 238 / 22%);
 }
-
 @media (max-width: 600px) {
     #forms-modal .forms-modal-content {
         background-position: center;
     }
-
     #forms-modal .modal-body {
         background: linear-gradient(180deg, rgb(5 14 24 / 25%), rgb(5 14 24 / 48%));
     }
 }
-
-
-/* Responsive dashboard and header refinements */
 @media (max-width: 575.98px) {
     .app-header .container {
         padding: 1.5rem 1rem 1.25rem;
     }
-
     .app-title {
         font-size: clamp(1.65rem, 7.8vw, 2.2rem);
         line-height: 1.08;
         overflow-wrap: anywhere;
     }
-
     .app-subtitle {
         margin-top: .45rem;
         font-size: .82rem;
     }
-
     .search-form {
         width: 100%;
     }
-
     .search-form .input-group {
         display: flex;
         flex-wrap: nowrap;
         width: 100%;
         min-width: 0;
     }
-
     .search-form .form-control {
         flex: 1 1 auto;
         width: 1%;
         min-width: 0;
     }
-
     .search-form .btn {
         flex: 0 0 auto;
     }
-
     .collection-dashboard {
         padding: .85rem;
         border-radius: 18px;
     }
-
     .dashboard-heading {
         align-items: flex-start;
         flex-direction: column;
         gap: .55rem;
         margin-bottom: .85rem;
     }
-
     .dashboard-heading h2 {
         font-size: 1.12rem;
         line-height: 1.2;
     }
-
     .dashboard-total {
         align-self: flex-start;
         margin: 0;
     }
-
     .dashboard-stats {
         grid-template-columns: minmax(0, 1fr);
         gap: .65rem;
     }
-
     .dashboard-stat,
     .dashboard-progress-stat {
         width: 100%;
@@ -433,79 +360,64 @@
         gap: .75rem;
         align-items: center;
     }
-
     .dashboard-stat-icon {
         flex: 0 0 38px;
         width: 38px;
         height: 38px;
     }
-
     .dashboard-stat-copy {
         min-width: 0;
         overflow-wrap: anywhere;
     }
-
     .dashboard-stat-label {
         font-size: .72rem;
         line-height: 1.35;
     }
-
     .dashboard-stat-copy > strong,
     .progress-label-row strong {
         font-size: 1.35rem;
     }
-
     .dashboard-stat-copy small {
         display: block;
         font-size: .68rem;
         line-height: 1.45;
         overflow-wrap: anywhere;
     }
-
     .progress-label-row {
         align-items: center;
         flex-wrap: wrap;
         row-gap: .15rem;
     }
-
     .collection-progress {
         width: 100%;
     }
 }
-
 @media (max-width: 360px) {
     .app-header .container {
         padding-inline: .75rem;
     }
-
     .collection-dashboard {
         padding: .7rem;
     }
-
     .dashboard-stat,
     .dashboard-progress-stat {
         padding: .7rem;
         gap: .6rem;
     }
-
     .dashboard-stat-icon {
         flex-basis: 34px;
         width: 34px;
         height: 34px;
     }
 }
-
-/* Restore the two-column dashboard when there is enough room. */
 @media (min-width: 576px) and (max-width: 767.98px) {
     .dashboard-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
     .dashboard-stat,
     .dashboard-progress-stat {
         min-width: 0;
     }
-
     .dashboard-stat-copy,
     .progress-stat-copy {
         min-width: 0;

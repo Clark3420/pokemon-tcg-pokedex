@@ -9,12 +9,10 @@
     filter: drop-shadow(0 22px 32px rgb(0 0 0 / 24%));
     will-change: transform, opacity;
 }
-
 .pokemon-card:focus-visible {
     outline: 3px solid #facc15;
     outline-offset: 5px;
 }
-
 .pokemon-card-inner {
     position: relative;
     width: 100%;
@@ -26,12 +24,10 @@
     transition: transform 0.68s cubic-bezier(.2, .72, .2, 1);
     will-change: transform;
 }
-
 .pokemon-card.is-flipped .pokemon-card-inner {
     transform: rotateY(180deg);
     -webkit-transform: rotateY(180deg);
 }
-
 .pokemon-card-face {
     position: absolute;
     inset: 0;
@@ -49,12 +45,10 @@
         0 12px 35px rgb(0 0 0 / 35%),
         inset 0 0 0 2px rgb(255 255 255 / 48%);
 }
-
 .pokemon-card-front {
     transform: rotateY(0deg);
     -webkit-transform: rotateY(0deg);
 }
-
 .pokemon-card-back {
     transform: rotateY(180deg);
     -webkit-transform: rotateY(180deg);
@@ -62,7 +56,6 @@
     border-color: #8e9bb8;
     color: #ffffff;
 }
-
 .card-frame {
     display: flex;
     flex-direction: column;
@@ -73,11 +66,9 @@
     gap: 0.55rem;
     background: linear-gradient(160deg, rgb(255 255 255 / 12%), transparent 32%);
 }
-
 .pokemon-card-back .card-frame {
     border-color: rgb(255 255 255 / 20%);
 }
-
 .card-heading {
     display: flex;
     justify-content: space-between;
@@ -86,7 +77,6 @@
     border-bottom: 2px solid rgb(80 55 10 / 35%);
     padding-bottom: 0.5rem;
 }
-
 .card-heading h2,
 .pokemon-card-back h2 {
     margin: 0;
@@ -95,12 +85,10 @@
     text-transform: capitalize;
     overflow-wrap: anywhere;
 }
-
 #pokemon-id {
     flex-shrink: 0;
     font-weight: 800;
 }
-
 .pokemon-artwork-container,
 .card-back-artwork {
     position: relative;
@@ -113,18 +101,15 @@
     border-radius: 12px;
     background: #10182a;
 }
-
 .pokemon-artwork-container {
     width: 100%;
     height: 40%;
     min-height: 0;
 }
-
 .card-back-artwork {
     flex: 1;
     min-height: 0;
 }
-
 .pokemon-artwork-container::before,
 .card-back-artwork::before {
     content: "";
@@ -142,7 +127,6 @@
     transform: scale(1.03);
     animation: environment-drift 15s ease-in-out infinite alternate;
 }
-
 .pokemon-artwork-container::after,
 .card-back-artwork::after {
     content: "";
@@ -156,7 +140,6 @@
         radial-gradient(ellipse at 50% 50%, transparent 42%, rgb(4 8 18 / 42%) 100%);
     mix-blend-mode: screen;
 }
-
 #pokemon-image,
 #back-pokemon-image {
     position: relative;
@@ -167,19 +150,15 @@
     object-fit: contain;
     filter: drop-shadow(0 7px 7px rgb(0 0 0 / 42%));
 }
-
-/* Keep animated Showdown pixel art crisp when scaled inside the card. */
 #pokemon-image.showdown-sprite,
 #back-pokemon-image.showdown-sprite {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
-
 @keyframes environment-drift {
     from { transform: scale(1.03) translate3d(-.3%, 0, 0); }
     to { transform: scale(1.10) translate3d(.3%, -0.5%, 0); }
 }
-
 #pokemon-card[data-type="normal"] { --pokemon-environment: url("../assets/backgrounds/normal.webp"); }
 #pokemon-card[data-type="fire"] { --pokemon-environment: url("../assets/backgrounds/fire.webp"); }
 #pokemon-card[data-type="water"] { --pokemon-environment: url("../assets/backgrounds/water.webp"); }
@@ -198,12 +177,10 @@
 #pokemon-card[data-type="dark"] { --pokemon-environment: url("../assets/backgrounds/dark.webp"); }
 #pokemon-card[data-type="steel"] { --pokemon-environment: url("../assets/backgrounds/steel.webp"); }
 #pokemon-card[data-type="fairy"] { --pokemon-environment: url("../assets/backgrounds/fairy.webp"); }
-
 @media (prefers-reduced-motion: reduce) {
     .pokemon-artwork-container::before,
     .card-back-artwork::before { animation: none; }
 }
-
 .pokemon-types {
     display: flex;
     flex-wrap: wrap;
@@ -213,7 +190,6 @@
     min-height: 1.65rem;
     margin: 0.55rem 0 0.45rem;
 }
-
 .type-badge {
     display: block;
     width: auto;
@@ -222,7 +198,6 @@
     object-fit: contain;
     flex: 0 0 auto;
 }
-
 .pokemon-measurements {
     display: flex;
     justify-content: space-between;
@@ -230,11 +205,9 @@
     font-size: 0.78rem;
     font-weight: 700;
 }
-
 .pokemon-measurements p {
     margin: 0;
 }
-
 .stats-heading {
     margin: 0;
     font-size: 0.9rem;
@@ -242,13 +215,11 @@
     text-align: center;
     text-transform: uppercase;
 }
-
 .pokemon-stats {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
 }
-
 .stat-row {
     display: grid;
     grid-template-columns: 65px 1fr 28px;
@@ -257,11 +228,9 @@
     font-size: 0.7rem;
     font-weight: 700;
 }
-
 .stat-label {
     text-transform: uppercase;
 }
-
 .stat-bar {
     width: 100%;
     height: 7px;
@@ -269,7 +238,6 @@
     border-radius: 10px;
     background: rgb(0 0 0 / 15%);
 }
-
 .stat-bar-fill {
     height: 100%;
     width: 0;
@@ -277,11 +245,9 @@
     background: #397a48;
     transition: width 0.4s ease;
 }
-
 .stat-value {
     text-align: right;
 }
-
 .card-back-artwork {
     display: flex;
     align-items: center;
@@ -292,43 +258,36 @@
     background: rgb(255 255 255 / 5%);
     border-radius: 12px;
 }
-
 #back-pokemon-image {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
-
 .pokemon-card-back h3 {
     margin: 0.4rem 0;
     font-size: 1.1rem;
     font-weight: 800;
 }
-
 .pokemon-abilities {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
 }
-
 .ability-item {
     padding: 0.7rem;
     background: rgb(255 255 255 / 8%);
     border: 1px solid rgb(255 255 255 / 15%);
     border-radius: 10px;
 }
-
 .ability-name {
     font-weight: 800;
     text-transform: capitalize;
 }
-
 .ability-description {
     margin-top: 0.3rem;
     color: #cbd5e1;
     font-size: 0.8rem;
 }
-
 .flip-hint {
     margin: auto 0 0;
     padding-top: 0.3rem;
@@ -337,18 +296,15 @@
     text-align: center;
     opacity: 0.75;
 }
-
 .pokemon-card {
     touch-action: pan-y;
     user-select: none;
     -webkit-user-select: none;
 }
-
 .pokemon-card img {
     -webkit-user-drag: none;
     user-select: none;
 }
-
 #evolution-content {
     width: 100%;
     overflow-x: auto;
@@ -356,14 +312,12 @@
     max-height: 70vh;
     padding: 0.5rem;
 }
-
 .evolution-node {
     display: flex;
     flex-direction: column;
     align-items: center;
     min-width: 0;
 }
-
 .evolution-card {
     display: flex;
     flex-direction: column;
@@ -380,41 +334,34 @@
         transform 0.2s ease,
         border-color 0.2s ease;
 }
-
 .evolution-card:hover {
     transform: translateY(-3px);
     border-color: var(--accent);
 }
-
 .evolution-card:focus-visible {
     outline: 3px solid #facc15;
     outline-offset: 3px;
 }
-
 .evolution-card img {
     width: 100%;
     aspect-ratio: 1;
     object-fit: contain;
 }
-
 .evolution-card .evolution-name {
     font-weight: 700;
     text-align: center;
     overflow-wrap: anywhere;
 }
-
 .evolution-id {
     color: var(--text-secondary);
     font-size: 0.8rem;
 }
-
 .evolution-arrow {
     padding: 0.35rem;
     color: var(--text-secondary);
     font-size: 1.5rem;
     line-height: 1;
 }
-
 .evolution-branches {
     display: flex;
     flex-wrap: wrap;
@@ -423,22 +370,18 @@
     gap: 1.25rem;
     width: 100%;
 }
-
 @media (max-width: 480px) {
     #evolution-content {
         padding: 0.25rem;
     }
-
     .evolution-card {
         width: 105px;
         padding: 0.5rem;
     }
-
     .evolution-branches {
         gap: 0.5rem;
     }
 }
-
 .pokemon-card-face::before {
     content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
     background: linear-gradient(118deg, transparent 18%, rgb(255 255 255 / 10%) 35%, transparent 52%);
@@ -450,26 +393,21 @@
 .pokemon-card.is-prismatic { filter: drop-shadow(0 0 9px rgb(120 180 255 / 16%)) drop-shadow(0 22px 32px rgb(0 0 0 / 24%)); }
 .pokemon-card.card-is-loading { opacity: .78; filter: saturate(.8) drop-shadow(0 22px 32px rgb(0 0 0 / 24%)); }
 .pokemon-card.card-is-loading .pokemon-card-inner { transform: scale(.985); }
-
 #pokemon-card {
     perspective: 1400px;
     -webkit-perspective: 1400px;
     touch-action: pan-y;
 }
-
 #pokemon-card .pokemon-card-inner {
     transform-origin: center center;
     -webkit-transform-origin: center center;
 }
-
 #pokemon-card.is-flipped .pokemon-card-inner {
     transform: rotateY(180deg);
     -webkit-transform: rotateY(180deg);
 }
-
 #pokemon-card:not(.is-flipped) .pokemon-card-front { z-index: 2; }
 #pokemon-card.is-flipped .pokemon-card-back { z-index: 2; }
-
 #evolution-modal .modal-dialog {
     max-width: min(980px, calc(100vw - 1.25rem));
 }
@@ -508,7 +446,6 @@
     max-height: 70vh;
     overflow-x: hidden;
     overflow-y: auto;
-
     padding: 14px 10px 20px;
     scroll-padding-block: 14px 20px;
     scrollbar-color: #596782 #151b2a;
@@ -545,7 +482,6 @@
     transform-origin: center center;
     scroll-margin-block: 14px;
 }
-
 .evolution-card::after {
     content: "";
     position: absolute;
@@ -565,7 +501,6 @@
     z-index: 1;
 }
 .evolution-card:hover {
-
     transform: translateY(-2px) scale(1.012);
     border-color: rgb(250 204 21 / 78%);
     background: linear-gradient(155deg, rgb(48 61 88 / 98%), rgb(20 28 48 / 98%) 68%);
@@ -646,7 +581,6 @@
     .evolution-node { animation: none !important; }
     .evolution-card, .evolution-card img { transition: none !important; }
 }
-
 #evolution-content > .evolution-node > .evolution-card {
     flex: 0 0 auto;
     min-height: 150px;
@@ -672,7 +606,6 @@
         min-height: 124px;
     }
 }
-
 .forms-modal-content {
     color: #eef2ff;
     background: linear-gradient(145deg, #182239, #101522 72%);
@@ -681,12 +614,10 @@
     overflow: hidden;
     box-shadow: 0 24px 80px rgba(0, 0, 0, .48);
 }
-
 #forms-modal .modal-header {
     border-bottom: 1px solid rgba(148, 163, 184, .2);
     background: rgba(255, 255, 255, .025);
 }
-
 #forms-modal .modal-title { color: #fff; font-weight: 800; }
 #forms-modal .btn-close { filter: invert(1) grayscale(1); }
 #forms-modal .modal-body { padding: 1.25rem; }
@@ -736,7 +667,6 @@
     image-rendering: auto;
     filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .25));
 }
-
 .form-option-card img { image-rendering: auto; }
 .form-option-card strong { font-size: .9rem; overflow-wrap: anywhere; }
 .form-option-id { color: #b8c6df; font-size: .75rem; }
@@ -759,10 +689,6 @@
 @media (prefers-reduced-motion: reduce) {
     .form-option-card { transition: none; }
 }
-
-
-
-/* Illustrated sanctuary backdrop for the Evolution Chain modal */
 #evolution-modal .modal-content {
     position: relative;
     isolation: isolate;
@@ -779,7 +705,6 @@
         0 0 0 1px rgb(255 255 255 / 8%) inset,
         0 0 32px rgb(56 189 248 / 12%);
 }
-
 #evolution-modal .modal-header {
     position: relative;
     z-index: 1;
@@ -787,57 +712,46 @@
     border-bottom: 1px solid rgb(191 219 254 / 34%);
     backdrop-filter: blur(5px);
 }
-
 #evolution-modal .modal-title {
     color: #fff8df;
     text-shadow: 0 2px 12px rgb(0 0 0 / 75%);
 }
-
 #evolution-modal .modal-title::before {
     content: "◉";
     display: inline-block;
     color: #f8d66d;
     text-shadow: 0 0 12px rgb(250 204 21 / 38%);
 }
-
 #evolution-modal .modal-body {
     position: relative;
     z-index: 1;
     background:
         linear-gradient(180deg, rgb(5 14 24 / 10%), rgb(5 14 24 / 25%));
 }
-
 #evolution-content {
     border-radius: 16px;
     background: linear-gradient(180deg, rgb(6 17 27 / 10%), rgb(6 17 27 / 8%));
     scrollbar-color: #78b9d5 rgb(8 23 34 / 55%);
 }
-
 #evolution-content .evolution-card {
     box-shadow:
         0 12px 28px rgb(0 0 0 / 52%),
         0 0 0 1px rgb(255 255 255 / 20%) inset;
     backdrop-filter: blur(3px);
 }
-
 @media (max-width: 600px) {
     #evolution-modal .modal-content {
         background-position: center;
     }
-
     #evolution-modal .modal-body {
         background: linear-gradient(180deg, rgb(5 14 24 / 25%), rgb(5 14 24 / 48%));
     }
 }
-
 @media (prefers-reduced-motion: reduce) {
     #evolution-modal .modal-content {
         scroll-behavior: auto;
     }
 }
-
-
-/* Keep modal dimensions based on their content; the Poké Ball is an overlay. */
 #evolution-modal .modal-body,
 #forms-modal .modal-body {
     position: relative;
@@ -869,19 +783,15 @@
     font-weight: 700;
     text-align: center;
 }
-
-/* Keep the Evolution Chain modal at a consistent size from first paint. */
 #evolution-modal .modal-content {
     height: min(680px, calc(100dvh - 2rem));
     min-height: 0;
     display: flex;
     flex-direction: column;
 }
-
 #evolution-modal .modal-header {
     flex: 0 0 auto;
 }
-
 #evolution-modal .modal-body {
     display: flex;
     flex: 1 1 auto;
@@ -889,7 +799,6 @@
     min-height: 0;
     overflow: hidden;
 }
-
 #evolution-modal #evolution-content {
     flex: 1 1 auto;
     min-height: 0;
@@ -898,22 +807,17 @@
     overflow-x: hidden;
     overflow-y: auto;
 }
-
 @media (max-width: 600px) {
     #evolution-modal .modal-content {
         height: min(620px, calc(100dvh - 1rem));
     }
 }
-
-
-/* Blue Poké Ball design for the reverse side of the Pokémon card. */
 .pokemon-card-back {
     background:
         radial-gradient(ellipse at 18% 12%, rgb(96 165 250 / 30%), transparent 42%),
         linear-gradient(145deg, #1764b5 0%, #104783 48%, #092d5c 100%);
     border-color: #78b9f2;
 }
-
 .pokemon-card-back .card-frame {
     position: relative;
     isolation: isolate;
@@ -923,7 +827,6 @@
         linear-gradient(145deg, rgb(96 165 250 / 12%), transparent 55%),
         linear-gradient(160deg, #15569a 0%, #0c3c72 58%, #082b55 100%);
 }
-
 .pokemon-card-back .card-frame::before {
     content: "";
     position: absolute;
@@ -950,33 +853,27 @@
         0 0 32px rgb(2 12 32 / 35%);
     pointer-events: none;
 }
-
 .pokemon-card-back .card-frame > * {
     position: relative;
     z-index: 1;
 }
-
 .pokemon-card-back .card-frame > .pokemon-abilities {
     z-index: 2;
 }
-
 .pokemon-card-back .card-back-artwork {
     border-color: rgb(191 219 254 / 48%);
     background: linear-gradient(145deg, rgb(7 30 62 / 45%), rgb(5 25 54 / 65%));
 }
-
 .pokemon-card-back .card-frame > h3 {
     color: #eff6ff;
     text-shadow: 0 2px 8px rgb(3 18 40 / 55%);
 }
-
 .pokemon-card-back .ability-item {
     background: rgb(5 25 54 / 76%);
     border-color: rgb(191 219 254 / 28%);
     box-shadow: 0 5px 14px rgb(2 12 32 / 18%);
     backdrop-filter: blur(3px);
 }
-
 @media (max-width: 480px) {
     .pokemon-card-back .card-frame::before {
         width: 194px;

@@ -6,17 +6,13 @@ import {
     invalidatePendingNavigation,
     navigateByOffset,
 } from "./features/navigation.js";
-
 import { getFilteredPokemon } from "./features/collection.js";
-
 import { getEvolutionChain } from "./api/evolutionService.js";
-
 import {
     displayEvolutionChain,
     showEvolutionModal,
     setEvolutionModalLoading,
 } from "./components/evolutionModal.js";
-
 import "./features/cardFlip.js";
 import "./features/swipe.js";
 import { getAllPokemonIds, getPokemonSuggestions } from "./api/pokemonService.js";
@@ -27,36 +23,26 @@ import {
     showFormsModal,
     setFormsModalLoading,
 } from "./components/formsModal.js";
-
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
-
 const errorMessage = document.getElementById("error-message");
 const loadingIndicator = document.getElementById("loading-indicator");
 const pokemonCard = document.getElementById("pokemon-card");
 const statusMessage = document.getElementById("status-message");
-
-// Use the left and right arrow keys to navigate Pokémon cards.
-// Ignore editable controls and open dialogs so keyboard interaction remains
-// predictable while searching or using modal content.
 document.addEventListener("keydown", (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-
     const target = event.target;
     const isEditable = target instanceof HTMLElement && (
         target.isContentEditable ||
         target.matches("input, textarea, select, [contenteditable='true']")
     );
     if (isEditable) return;
-
     const openModal = document.querySelector(".modal.show");
     if (openModal) return;
-
     event.preventDefault();
     navigateByOffset(event.key === "ArrowRight" ? 1 : -1);
 });
-
 const regionFilter = document.getElementById("region-filter");
 const regionFilterTrigger = document.getElementById("region-filter-trigger");
 const regionFilterMenu = document.getElementById("region-filter-menu");
@@ -72,7 +58,6 @@ const TYPE_FILTER_COLORS = {
     bug: "#A6B91A", rock: "#B6A136", ghost: "#735797", dragon: "#6F35FC",
     dark: "#705746", steel: "#B7B7CE", fairy: "#D685AD"
 };
-
 function syncRegionFilterDropdown() {
     const selected = regionFilter.selectedOptions[0];
     if (selected) {
@@ -88,12 +73,10 @@ function syncRegionFilterDropdown() {
     });
     regionFilterTrigger.disabled = regionFilter.disabled;
 }
-
 function closeRegionFilterMenu() {
     regionFilterMenu.classList.add("d-none");
     regionFilterTrigger.classList.remove("is-open");
 }
-
 function initializeRegionFilterDropdown() {
     [...regionFilter.options].forEach((option) => {
         const button = document.createElement("button");
@@ -125,7 +108,6 @@ function initializeRegionFilterDropdown() {
     regionFilter.addEventListener("change", syncRegionFilterDropdown);
     syncRegionFilterDropdown();
 }
-
 function syncTypeFilterDropdown() {
     const selected = typeFilter.selectedOptions[0];
     if (selected) {
@@ -141,12 +123,10 @@ function syncTypeFilterDropdown() {
     });
     typeFilterTrigger.disabled = typeFilter.disabled;
 }
-
 function closeTypeFilterMenu() {
     typeFilterMenu.classList.add("d-none");
     typeFilterTrigger.classList.remove("is-open");
 }
-
 function initializeTypeFilterDropdown() {
     [...typeFilter.options].forEach((option) => {
         const button = document.createElement("button");
@@ -179,7 +159,6 @@ function initializeTypeFilterDropdown() {
     typeFilter.addEventListener("change", syncTypeFilterDropdown);
     syncTypeFilterDropdown();
 }
-
 const randomButton = document.getElementById("random-button");
 const evolutionButton = document.getElementById("evolution-button");
 const formsButton = document.getElementById("forms-button");
@@ -190,7 +169,6 @@ let currentFormsRequestId = 0;
 let currentPokemonForForms = null;
 let currentDisplayedFormResourceName = null;
 let formsRequestInProgress = false;
-
 function showError(message) {
     const title = document.getElementById("error-message-title");
     const text = document.getElementById("error-message-text");
@@ -202,7 +180,6 @@ function showError(message) {
     document.getElementById("retry-button")?.classList.add("d-none");
     errorMessage.classList.remove("d-none");
 }
-
 function clearError() {
     const title = document.getElementById("error-message-title");
     const text = document.getElementById("error-message-text");
@@ -214,7 +191,6 @@ function clearError() {
     document.getElementById("retry-button")?.classList.add("d-none");
     errorMessage.classList.add("d-none");
 }
-
 async function searchPokemon(identifier) {
     invalidatePendingNavigation();
     const requestId = ++currentRequestId;
@@ -222,13 +198,11 @@ async function searchPokemon(identifier) {
     statusMessage.textContent = "";
     loadingIndicator.classList.remove("d-none");
     loadingIndicator.classList.remove("loading-compact");
-
     try {
         const allPokemonIds = await getAllPokemonIds();
         if (requestId !== currentRequestId) {
             return;
         }
-
         setNavigationCollection(allPokemonIds);
     } catch (error) {
         if (requestId !== currentRequestId) {
@@ -240,24 +214,18 @@ async function searchPokemon(identifier) {
         statusMessage.textContent =
             "Full alternate-form navigation is temporarily unavailable; using the base Pokédex.";
     }
-
     if (requestId !== currentRequestId) {
         return;
     }
-
     loadingIndicator.classList.add("d-none");
     await navigateToPokemon(identifier);
 }
-
 initializeRegionFilterDropdown();
 initializeTypeFilterDropdown();
-
 searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     hideSearchSuggestions();
-
     const query = searchInput.value.trim();
-
     if (!query) {
         showError("Please enter a Pokémon name or ID.");
         return;
@@ -265,82 +233,65 @@ searchForm.addEventListener("submit", async (event) => {
     regionFilter.value = "all";
     typeFilter.value = "all";
     syncTypeFilterDropdown();
-
     await searchPokemon(query);
 });
-
 const suggestionsContainer = document.getElementById("search-suggestions");
 let suggestionItems = [];
 let activeSuggestionIndex = -1;
 let suggestionTimer = null;
 let suggestionRequestId = 0;
-
 function hideSearchSuggestions() {
     suggestionsContainer.classList.add("d-none");
     suggestionsContainer.replaceChildren();
     suggestionItems = [];
     activeSuggestionIndex = -1;
 }
-
 function setActiveSuggestion(index) {
     if (suggestionItems.length === 0) return;
-
     activeSuggestionIndex =
         (index + suggestionItems.length) % suggestionItems.length;
-
     suggestionsContainer.querySelectorAll(".search-suggestion").forEach((item, itemIndex) => {
         item.classList.toggle("is-active", itemIndex === activeSuggestionIndex);
     });
 }
-
 function chooseSuggestion(pokemon) {
     searchInput.value = pokemon.name;
     hideSearchSuggestions();
     searchForm.requestSubmit();
 }
-
 function renderSearchSuggestions(suggestions) {
     suggestionItems = suggestions;
     activeSuggestionIndex = -1;
     suggestionsContainer.replaceChildren();
-
     if (suggestions.length === 0) {
         hideSearchSuggestions();
         return;
     }
-
     suggestions.forEach((pokemon) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "search-suggestion";
-
         const name = document.createElement("span");
         name.className = "search-suggestion-name";
         name.textContent = pokemon.name.replace(/-/g, " ");
-
         const id = document.createElement("span");
         id.className = "search-suggestion-id";
         id.textContent = `#${pokemon.id}`;
-
         button.append(name, id);
         button.addEventListener("mousedown", (event) => event.preventDefault());
         button.addEventListener("click", () => chooseSuggestion(pokemon));
         suggestionsContainer.appendChild(button);
     });
-
     suggestionsContainer.classList.remove("d-none");
 }
-
 searchInput.addEventListener("input", () => {
     window.clearTimeout(suggestionTimer);
     const query = searchInput.value.trim();
     const requestId = ++suggestionRequestId;
-
     if (query.length < 2 || /^\d+$/.test(query)) {
         hideSearchSuggestions();
         return;
     }
-
     suggestionTimer = window.setTimeout(async () => {
         try {
             const suggestions = await getPokemonSuggestions(query, 8);
@@ -353,10 +304,8 @@ searchInput.addEventListener("input", () => {
         }
     }, 140);
 });
-
 searchInput.addEventListener("keydown", (event) => {
     if (suggestionsContainer.classList.contains("d-none")) return;
-
     if (event.key === "ArrowDown") {
         event.preventDefault();
         setActiveSuggestion(activeSuggestionIndex + 1);
@@ -374,41 +323,33 @@ searchInput.addEventListener("keydown", (event) => {
         hideSearchSuggestions();
     }
 });
-
 searchInput.addEventListener("blur", () => {
     window.setTimeout(hideSearchSuggestions, 120);
 });
-
 async function applyFilters() {
     invalidatePendingNavigation();
     if (filterRequestInProgress) {
         return;
     }
-
     const requestId = ++currentRequestId;
     const hadVisibleCard = !pokemonCard.classList.contains("d-none");
-
     filterRequestInProgress = true;
     regionFilter.disabled = true;
     typeFilter.disabled = true;
     syncTypeFilterDropdown();
     randomButton.disabled = true;
-
     clearError();
     statusMessage.textContent = "";
     loadingIndicator.classList.add("loading-compact");
     loadingIndicator.classList.remove("d-none");
-
     try {
         const collection = await getFilteredPokemon(
             regionFilter.value,
             typeFilter.value
         );
-
         if (requestId !== currentRequestId) {
             return;
         }
-
         if (collection.length === 0) {
             setNavigationCollection([]);
             pokemonCard.classList.add("d-none");
@@ -417,15 +358,12 @@ async function applyFilters() {
                 "No Pokémon match the selected filters.";
             return;
         }
-
         setNavigationCollection(collection);
-
         await navigateToPokemon(collection[0].id);
     } catch (error) {
         if (requestId !== currentRequestId) {
             return;
         }
-
         showError(
             `Unable to apply filters: ${error.message}`
         );
@@ -435,7 +373,6 @@ async function applyFilters() {
             loadingIndicator.classList.add("d-none");
             loadingIndicator.classList.remove("loading-compact");
         }
-
         filterRequestInProgress = false;
         regionFilter.disabled = false;
         typeFilter.disabled = false;
@@ -443,34 +380,27 @@ async function applyFilters() {
         randomButton.disabled = false;
     }
 }
-
 function handleFilterChange() {
     applyFilters();
 }
-
 regionFilter.addEventListener("change", handleFilterChange);
 typeFilter.addEventListener("change", handleFilterChange);
-
 randomButton.addEventListener("click", async () => {
     const collection = getNavigationCollection();
-
     if (collection.length === 0) {
         statusMessage.textContent =
             "There are no Pokémon in the current collection.";
         return;
     }
-
     const currentPokemonId = getCurrentPokemonId();
     const availableIds = collection.length > 1
         ? collection.filter((id) => Number(id) !== Number(currentPokemonId))
         : collection;
-
     const randomIndex = Math.floor(
         Math.random() * availableIds.length
     );
     const randomPokemonId = availableIds[randomIndex];
     const direction = Number(randomPokemonId) > Number(currentPokemonId) ? 1 : -1;
-
     randomButton.disabled = true;
     try {
         await navigateToPokemon(randomPokemonId, direction);
@@ -478,25 +408,21 @@ randomButton.addEventListener("click", async () => {
         randomButton.disabled = false;
     }
 });
-
 evolutionButton.addEventListener("click", async () => {
     if (evolutionRequestInProgress) {
         return;
     }
-
     evolutionRequestInProgress = true;
     evolutionButton.disabled = true;
     evolutionButton.textContent = "Loading Evolutions...";
     statusMessage.textContent = "";
     setEvolutionModalLoading(true);
     showEvolutionModal();
-
     try {
         const chain = await getEvolutionChain(
             document.getElementById("pokemon-id").textContent
                 .replace("#", "")
         );
-
         await displayEvolutionChain(chain);
         setEvolutionModalLoading(false);
     } catch (error) {
@@ -512,7 +438,6 @@ evolutionButton.addEventListener("click", async () => {
 window.addEventListener("pokemonloaded", async (event) => {
     const { pokemon } = event.detail || {};
     if (!pokemon) return;
-
     const requestId = ++currentFormsRequestId;
     currentPokemonForForms = pokemon;
     currentDisplayedFormResourceName = pokemon.name;
@@ -521,7 +446,6 @@ window.addEventListener("pokemonloaded", async (event) => {
     formsButton.title = "Checking whether this Pokémon has alternate forms.";
     formsButton.textContent = "Checking Forms...";
     formsButton.dataset.forms = "[]";
-
     try {
         const forms = await getPokemonForms(pokemon);
         if (requestId !== currentFormsRequestId) return;
@@ -542,26 +466,20 @@ window.addEventListener("pokemonloaded", async (event) => {
 window.addEventListener("pokemonformselected", async (event) => {
     const form = event.detail?.form;
     if (!form || !currentPokemonForForms) return;
-
     const targetPokemonId = Number(form.pokemonId ?? form.id);
     const currentPokemonId = Number(currentPokemonForForms.id);
     const targetFormResourceName = form.formResourceName || form.name;
-
     if (
         Number.isSafeInteger(targetPokemonId) &&
         targetPokemonId > 0 &&
         targetPokemonId === currentPokemonId &&
         targetFormResourceName === currentDisplayedFormResourceName
     ) return;
-
     if (Number.isSafeInteger(targetPokemonId) && targetPokemonId > 0 && targetPokemonId !== currentPokemonId) {
         const direction = targetPokemonId > currentPokemonId ? 1 : -1;
         await navigateToPokemon(targetPokemonId, direction);
         return;
     }
-
-    // Keep the same loading experience when switching between forms of the
-    // current Pokémon, even though this path updates the card in place.
     const loadingIndicator = document.getElementById("loading-indicator");
     const pokemonCard = document.getElementById("pokemon-card");
     if (loadingIndicator && pokemonCard) {
@@ -571,7 +489,6 @@ window.addEventListener("pokemonformselected", async (event) => {
         if (loadingText) loadingText.textContent = "Loading Pokémon form...";
         pokemonCard.classList.add("card-is-loading");
     }
-
     try {
         await preloadPokemonTypeBadges(form.types || []);
         const candidates = Array.isArray(form.imageCandidates) && form.imageCandidates.length
@@ -584,7 +501,7 @@ window.addEventListener("pokemonformselected", async (event) => {
                     if (index >= candidates.length) { resolve(null); return; }
                     const image = new Image();
                     image.onload = async () => {
-                        try { if (image.decode) await image.decode(); } catch { /* loaded image remains usable */ }
+                        try { if (image.decode) await image.decode(); } catch {  }
                         resolve({ src: candidates[index] });
                     };
                     image.onerror = () => { index += 1; attempt(); };
@@ -604,9 +521,7 @@ window.addEventListener("pokemonformselected", async (event) => {
         }
         pokemonCard?.classList.remove("card-is-loading");
     }
-
     currentDisplayedFormResourceName = targetFormResourceName;
-
     const typeColors = {
         normal: "#A8A77A", fire: "#EE8130", water: "#6390F0", electric: "#F7D02C",
         grass: "#7AC74C", ice: "#96D9D6", fighting: "#C22E28", poison: "#A33EA1",
@@ -617,7 +532,6 @@ window.addEventListener("pokemonformselected", async (event) => {
     const formLabel = form.formName
         ? `${form.name.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())} (${form.formName.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())} Form)`
         : form.name.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-
     ["pokemon-image", "back-pokemon-image"].forEach((id) => {
         const image = document.getElementById(id);
         if (image && form.image) {
@@ -640,7 +554,6 @@ window.addEventListener("pokemonformselected", async (event) => {
         const name = document.getElementById(id);
         if (name) name.textContent = formLabel;
     });
-
     const typesContainer = document.getElementById("pokemon-types");
     typesContainer.replaceChildren();
     form.types.forEach((type) => {
@@ -665,7 +578,6 @@ window.addEventListener("pokemonformselected", async (event) => {
     pokemonCard.dataset.type = firstType;
     document.body.dataset.pokemonType = firstType;
 });
-
 formsButton.addEventListener("click", async () => {
     if (formsRequestInProgress || !currentPokemonForForms) return;
     formsRequestInProgress = true;

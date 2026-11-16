@@ -2,19 +2,14 @@ import { getPokemon, getAllPokemonIds } from "../api/pokemonService.js";
 import { getPokemonSpecies } from "../api/speciesService.js";
 import { renderPokemonCard, preloadPokemonArtwork, preloadPokemonTypeBadges } from "../components/pokemonCard.js";
 import { setActiveCollectionCount } from "./collectionDashboard.js";
-
 const BASE_POKEMON_COUNT = 1025;
-
 let currentPokemonId = 25;
 let navigationRequestId = 0;
 let navigationInProgress = false;
 const unavailableNavigationIds = new Set();
-
 let activeCardAnimation = null;
-
 function clearCardNavigationAnimation() {
     if (!activeCardAnimation) return;
-
     const { cardElement, className, onEnd, timeoutId } = activeCardAnimation;
     cardElement.removeEventListener("animationend", onEnd);
     cardElement.removeEventListener("animationcancel", onEnd);
@@ -22,18 +17,14 @@ function clearCardNavigationAnimation() {
     cardElement.classList.remove(className);
     activeCardAnimation = null;
 }
-
 function playCardNavigationAnimation(direction) {
     clearCardNavigationAnimation();
-
     if (!direction || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         return;
     }
-
     const className = direction > 0
         ? "card-enter-from-right"
         : "card-enter-from-left";
-
     card.classList.remove(
         "card-enter-from-left",
         "card-enter-from-right",
@@ -42,12 +33,10 @@ function playCardNavigationAnimation(direction) {
     );
     void card.offsetWidth;
     card.classList.add(className);
-
     const finish = (event) => {
         if (event && event.target !== card) return;
         clearCardNavigationAnimation();
     };
-
     const timeoutId = window.setTimeout(() => finish(), 850);
     activeCardAnimation = {
         cardElement: card,
@@ -58,19 +47,16 @@ function playCardNavigationAnimation(direction) {
     card.addEventListener("animationend", finish);
     card.addEventListener("animationcancel", finish);
 }
-
 function playCardExitAnimation(direction) {
     if (!direction || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         return Promise.resolve();
     }
-
     clearCardNavigationAnimation();
     const className = direction > 0 ? "card-exit-to-left" : "card-exit-to-right";
     card.classList.remove("card-enter-from-left", "card-enter-from-right",
         "card-exit-to-left", "card-exit-to-right");
     void card.offsetWidth;
     card.classList.add(className);
-
     return new Promise((resolve) => {
         let settled = false;
         const finish = (event) => {
@@ -86,19 +72,15 @@ function playCardExitAnimation(direction) {
         card.addEventListener("animationend", finish);
     });
 }
-
-
 function playCardSwapAnimation(direction, replaceCardContent) {
     if (!direction || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         replaceCardContent();
         return Promise.resolve();
     }
-
     clearCardNavigationAnimation();
     const className = direction > 0
         ? "card-swap-next"
         : "card-swap-previous";
-
     card.classList.remove(
         "card-enter-from-left",
         "card-enter-from-right",
@@ -109,17 +91,14 @@ function playCardSwapAnimation(direction, replaceCardContent) {
     );
     void card.offsetWidth;
     card.classList.add(className);
-
     return new Promise((resolve) => {
         let swapped = false;
         let settled = false;
-
         const swapContent = () => {
             if (swapped) return;
             swapped = true;
             replaceCardContent();
         };
-
         const finish = (event) => {
             if (event && event.target !== card) return;
             if (settled) return;
@@ -131,13 +110,11 @@ function playCardSwapAnimation(direction, replaceCardContent) {
             card.classList.remove(className);
             resolve();
         };
-
         const swapTimer = window.setTimeout(swapContent, 285);
         const fallbackTimer = window.setTimeout(() => finish(), 700);
         card.addEventListener("animationend", finish);
     });
 }
-
 export function invalidatePendingNavigation() {
     navigationRequestId += 1;
     navigationInProgress = false;
@@ -149,14 +126,11 @@ export function invalidatePendingNavigation() {
     searchButton.disabled = false;
     updateNavigationButtons();
 }
-
 let navigationIds = Array.from(
     { length: BASE_POKEMON_COUNT },
     (_, index) => index + 1
 );
-
 let currentIndex = navigationIds.indexOf(currentPokemonId);
-
 const previousButton = document.getElementById("previous-button");
 const nextButton = document.getElementById("next-button");
 const card = document.getElementById("pokemon-card");
@@ -168,14 +142,10 @@ const errorMessageTitle = document.getElementById("error-message-title");
 const errorMessageHint = document.getElementById("error-message-hint");
 const retryButton = document.getElementById("retry-button");
 let lastFailedNavigation = null;
-
-
-
 function updateNavigationButtons() {
     previousButton.disabled = navigationInProgress || findAvailableIndex(currentIndex, -1) < 0;
     nextButton.disabled = navigationInProgress || findAvailableIndex(currentIndex, 1) < 0;
 }
-
 function findAvailableIndex(startIndex, direction) {
     let index = startIndex + direction;
     while (index >= 0 && index < navigationIds.length) {
@@ -184,7 +154,6 @@ function findAvailableIndex(startIndex, direction) {
     }
     return -1;
 }
-
 export function setNavigationCollection(pokemonList) {
     unavailableNavigationIds.clear();
     navigationIds = [...new Set(
@@ -200,38 +169,27 @@ export function setNavigationCollection(pokemonList) {
                 id >= 1
         )
         .sort((a, b) => a - b);
-
     currentIndex = navigationIds.indexOf(currentPokemonId);
-
     updateNavigationButtons();
     setActiveCollectionCount(navigationIds.length);
     return navigationIds;
 }
-
 export function getNavigationCollection() {
     return [...navigationIds];
 }
-
 export function getCurrentPokemonId() {
     return currentPokemonId;
 }
-
 export function setCurrentPokemonId(id) {
     currentPokemonId = Number(id);
     currentIndex = navigationIds.indexOf(currentPokemonId);
-
     updateNavigationButtons();
 }
-
 export async function navigateToPokemon(id, direction = 0) {
     if (navigationInProgress) return false;
     navigationInProgress = true;
     card.classList.add("card-navigation-in-progress");
     const requestId = ++navigationRequestId;
-
-    // Clear the existing panel's child nodes without replacing its contents.
-    // Assigning errorMessage.textContent here would detach the title, message,
-    // hint, and retry button from the DOM, leaving an empty outlined panel.
     if (errorMessageTitle) errorMessageTitle.textContent = "Something went wrong";
     if (errorMessageText) errorMessageText.textContent = "";
     if (errorMessageHint) {
@@ -239,45 +197,34 @@ export async function navigateToPokemon(id, direction = 0) {
     }
     if (retryButton) retryButton.classList.add("d-none");
     errorMessage.classList.add("d-none");
-
     const hasVisibleCard = !card.classList.contains("d-none");
     if (!hasVisibleCard) {
         loadingIndicator.classList.remove("d-none");
         loadingIndicator.classList.remove("loading-compact");
     } else if (direction !== 0) {
-        // Show a compact overlay over the current card while the next/previous
-        // Pokémon data and artwork are fetched and decoded.
         loadingIndicator.classList.remove("d-none");
         loadingIndicator.classList.add("loading-compact");
         const loadingText = loadingIndicator.querySelector("p");
         if (loadingText) loadingText.textContent = "Loading Pokémon...";
         card.classList.add("card-is-loading");
     } else {
-        // Searches keep the current card visible without the navigation overlay.
         loadingIndicator.classList.add("d-none");
         loadingIndicator.classList.remove("loading-compact");
         card.classList.remove("card-is-loading");
     }
-
     previousButton.disabled = true;
     nextButton.disabled = true;
     searchButton.disabled = true;
-
     try {
-        // Give the browser two paint opportunities so the loading overlay is
-        // visible immediately before the Next/Previous request begins.
         if (direction !== 0 && hasVisibleCard) {
             await new Promise((resolve) => {
                 requestAnimationFrame(() => requestAnimationFrame(resolve));
             });
-
             if (requestId !== navigationRequestId) {
                 return;
             }
         }
-
         const pokemon = await getPokemon(id);
-
         if (requestId !== navigationRequestId) {
             return;
         }
@@ -296,9 +243,7 @@ export async function navigateToPokemon(id, direction = 0) {
                 updateNavigationButtons();
             }
         }
-
         let species = null;
-
         try {
             species = await getPokemonSpecies(pokemon);
         } catch (error) {
@@ -307,14 +252,9 @@ export async function navigateToPokemon(id, direction = 0) {
                 error.message
             );
         }
-
         if (requestId !== navigationRequestId) {
             return;
         }
-
-        // Decode the incoming artwork before the card becomes visible again.
-        // This prevents the browser from briefly painting the previous image
-        // while the new image is still being fetched or decoded.
         const [artworkCandidates] = await Promise.all([
             preloadPokemonArtwork(pokemon),
             preloadPokemonTypeBadges(pokemon.types),
@@ -322,7 +262,6 @@ export async function navigateToPokemon(id, direction = 0) {
         if (requestId !== navigationRequestId) {
             return;
         }
-
         const commitPokemon = () => {
             renderPokemonCard(pokemon, species, artworkCandidates);
             card.classList.remove("d-none", "card-is-loading");
@@ -330,17 +269,10 @@ export async function navigateToPokemon(id, direction = 0) {
             lastFailedNavigation = null;
             if (retryButton) retryButton.classList.add("d-none");
         };
-
         if (direction !== 0 && hasVisibleCard) {
-            // Finish the loading phase before starting the card transition.
-            // The new Pokémon must not be revealed while the loading spinner
-            // is still active.
             loadingIndicator.classList.add("d-none");
             loadingIndicator.classList.remove("loading-compact");
             card.classList.remove("card-is-loading");
-
-            // One continuous slide: old artwork exits, content swaps at the
-            // invisible midpoint, and the new artwork enters from the other side.
             await playCardSwapAnimation(direction, commitPokemon);
             if (requestId !== navigationRequestId) return;
         } else {
@@ -350,7 +282,6 @@ export async function navigateToPokemon(id, direction = 0) {
         window.dispatchEvent(new CustomEvent("pokemonloaded", {
             detail: { pokemon, species }
         }));
-
         unavailableNavigationIds.delete(Number(pokemon.id));
         setCurrentPokemonId(pokemon.id);
         return true;
@@ -358,17 +289,14 @@ export async function navigateToPokemon(id, direction = 0) {
         if (requestId !== navigationRequestId) {
             return;
         }
-
         const isNotFound = error.status === 404
             || /^No Pokémon found/i.test(error.message || "")
             || /requested Pokémon or resource was not found/i.test(error.message || "");
         const canRetry = !isNotFound;
-
         if (direction !== 0 && isNotFound) {
             unavailableNavigationIds.add(Number(id));
             updateNavigationButtons();
         }
-
         const friendlyMessage = isNotFound
             ? "We couldn't find that Pokémon."
             : error.status === 429
@@ -378,7 +306,6 @@ export async function navigateToPokemon(id, direction = 0) {
                     : /connect to PokeAPI|internet connection/i.test(error.message || "")
                         ? "We couldn't connect to the Pokémon database."
                         : "We couldn't load this Pokémon right now.";
-
         if (errorMessageTitle) {
             errorMessageTitle.textContent = isNotFound ? "Pokémon not found" : "Unable to load Pokémon";
         }
@@ -395,7 +322,6 @@ export async function navigateToPokemon(id, direction = 0) {
                 : "Check your connection, then try again.";
         }
         errorMessage.classList.remove("d-none");
-
         lastFailedNavigation = canRetry ? { id, direction } : null;
         if (retryButton) retryButton.classList.toggle("d-none", !canRetry);
         return false;
@@ -411,33 +337,25 @@ export async function navigateToPokemon(id, direction = 0) {
         }
     }
 }
-
 export function navigateByOffset(offset) {
     if (navigationInProgress) return;
-
     const nextIndex = findAvailableIndex(currentIndex, offset > 0 ? 1 : -1);
-
     if (nextIndex < 0) {
         return;
     }
-
     navigateToPokemon(navigationIds[nextIndex], offset);
 }
-
 [previousButton, nextButton].forEach((button) => {
     button.addEventListener("pointerdown", (event) => {
         event.stopPropagation();
     });
-
     button.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-
         if (navigationInProgress) return;
         navigateByOffset(button === nextButton ? 1 : -1);
     });
 });
-
 retryButton?.addEventListener("click", () => {
     if (!lastFailedNavigation || navigationInProgress) return;
     const { id, direction } = lastFailedNavigation;
@@ -445,7 +363,4 @@ retryButton?.addEventListener("click", () => {
     retryButton.classList.add("d-none");
     navigateToPokemon(id, direction);
 });
-
 updateNavigationButtons();
-
-// Populate the initial Previous and Next preview cards.

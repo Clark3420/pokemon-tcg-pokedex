@@ -11,21 +11,17 @@ const DEFAULT_TTL = 24 * 60 * 60 * 1000;
 const LIST_TTL = 6 * 60 * 60 * 1000;
 const CACHE_VERSION = 1;
 let cacheGeneration = 0;
-
 function cacheTtl(endpoint) {
     return /\/(pokemon|pokemon-form|pokemon-species|type|generation|region|evolution-chain)(\?|$)/.test(endpoint)
         ? LIST_TTL
         : DEFAULT_TTL;
 }
-
 function cacheKey(url) {
     return `${CACHE_PREFIX}${url}`;
 }
-
 function cloneData(data) {
     return JSON.parse(JSON.stringify(data));
 }
-
 function projectPokemonResponse(data) {
     if (!data || typeof data !== "object" || !data.sprites || !data.stats) {
         return data;
@@ -49,20 +45,17 @@ function projectPokemonResponse(data) {
         },
     };
 }
-
 function readCache(url) {
     const now = Date.now();
     const memoryEntry = MEMORY_CACHE.get(url);
     if (memoryEntry) {
         if (memoryEntry.expiresAt > now) {
-            // Refresh insertion order so frequently used entries stay in the LRU cache.
             rememberMemory(url, memoryEntry);
             return cloneData(memoryEntry.data);
         }
         STALE_CACHE.set(url, memoryEntry);
         MEMORY_CACHE.delete(url);
     }
-
     try {
         const raw = localStorage.getItem(cacheKey(url));
         if (!raw) return null;
@@ -85,7 +78,6 @@ function readCache(url) {
         return null;
     }
 }
-
 function rememberMemory(url, entry) {
     MEMORY_CACHE.delete(url);
     MEMORY_CACHE.set(url, entry);
@@ -94,7 +86,6 @@ function rememberMemory(url, entry) {
         MEMORY_CACHE.delete(oldestKey);
     }
 }
-
 function trimPersistedCache(requiredBytes = 0) {
     try {
         const entries = [];
@@ -123,7 +114,6 @@ function trimPersistedCache(requiredBytes = 0) {
     } catch {
     }
 }
-
 function writeCache(url, data, ttl) {
     const persistedData = /\/pokemon\/\d+\/?$/.test(url)
         ? projectPokemonResponse(data)
@@ -135,27 +125,22 @@ function writeCache(url, data, ttl) {
     };
     rememberMemory(url, entry);
     STALE_CACHE.delete(url);
-
     try {
         const serialized = JSON.stringify(entry);
         trimPersistedCache(serialized.length);
         localStorage.setItem(cacheKey(url), serialized);
     } catch {
-        // Storage may be unavailable or full; the in-memory cache remains usable.
     }
 }
-
 export async function getJSON(endpoint, options = {}) {
     const method = String(options.method || "GET").toUpperCase();
     const url = `${API_BASE_URL}${endpoint}`;
     const shouldCache = method === "GET" && !options.signal;
-
     if (shouldCache) {
         const cached = readCache(url);
         if (cached !== null) return cached;
         if (IN_FLIGHT.has(url)) return cloneData(await IN_FLIGHT.get(url));
     }
-
     const requestGeneration = cacheGeneration;
     const requestPromise = (async () => {
         const controller = new AbortController();
@@ -164,7 +149,6 @@ export async function getJSON(endpoint, options = {}) {
         const abortFromExternalSignal = () => controller.abort(externalSignal?.reason);
         if (externalSignal?.aborted) abortFromExternalSignal();
         else externalSignal?.addEventListener("abort", abortFromExternalSignal, { once: true });
-
         try {
             const response = await fetch(url, {
                 ...options,
@@ -174,7 +158,6 @@ export async function getJSON(endpoint, options = {}) {
                     ...options.headers,
                 },
             });
-
             if (!response.ok) {
                 if (response.status === 404) {
                     const error = new Error("The requested Pokémon or resource was not found.");
@@ -190,7 +173,6 @@ export async function getJSON(endpoint, options = {}) {
                 error.status = response.status;
                 throw error;
             }
-
             const data = await response.json();
             if (shouldCache && requestGeneration === cacheGeneration) {
                 writeCache(url, data, cacheTtl(endpoint));
@@ -219,7 +201,6 @@ export async function getJSON(endpoint, options = {}) {
             externalSignal?.removeEventListener("abort", abortFromExternalSignal);
         }
     })();
-
     if (shouldCache) IN_FLIGHT.set(url, requestPromise);
     try {
         const data = await requestPromise;
@@ -230,7 +211,6 @@ export async function getJSON(endpoint, options = {}) {
         }
     }
 }
-
 export function clearApiCache() {
     cacheGeneration += 1;
     MEMORY_CACHE.clear();
