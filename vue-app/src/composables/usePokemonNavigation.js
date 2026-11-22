@@ -33,7 +33,7 @@ function preloadImage(url, timeout = 8000) {
             timeout
         );
 
-        image.onload = async () => {
+        const decodeAndFinish = async () => {
             try {
                 if (typeof image.decode === "function") {
                     await image.decode();
@@ -41,14 +41,19 @@ function preloadImage(url, timeout = 8000) {
             } catch {
             }
 
-            finish(true);
+            finish(image.naturalWidth > 0);
         };
 
+        image.onload = decodeAndFinish;
         image.onerror = () => finish(false);
         image.src = url;
 
-        if (image.complete && image.naturalWidth > 0) {
-            finish(true);
+        if (image.complete) {
+            if (image.naturalWidth > 0) {
+                decodeAndFinish();
+            } else {
+                finish(false);
+            }
         }
     });
 }
@@ -193,6 +198,18 @@ export function usePokemonNavigation() {
         loadingCompact.value = hasVisibleCard && direction !== 0;
 
         try {
+            if (direction !== 0 && hasVisibleCard) {
+                await new Promise((resolve) => {
+                    window.requestAnimationFrame(() => {
+                        window.requestAnimationFrame(resolve);
+                    });
+                });
+
+                if (requestId !== navigationRequestId) {
+                    return false;
+                }
+            }
+
             const pokemon = await getPokemon(id);
 
             if (requestId !== navigationRequestId) {
