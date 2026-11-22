@@ -21,22 +21,46 @@ const errorMessage = ref("");
 let modalInstance = null;
 let pendingPokemonId = null;
 let hiddenHandler = null;
+let hideHandler = null;
+let returnFocusElement = null;
 
 onMounted(() => {
     modalInstance = Modal.getOrCreateInstance(modalElement.value);
+    hideHandler = () => {
+        const focusedElement = document.activeElement;
+
+        if (focusedElement && modalElement.value.contains(focusedElement)) {
+            focusedElement.blur();
+        }
+    };
+
     hiddenHandler = () => {
         if (pendingPokemonId !== null) {
             const selectedId = pendingPokemonId;
             pendingPokemonId = null;
             emit("select-pokemon", selectedId);
         }
+
+        if (returnFocusElement?.isConnected) {
+            returnFocusElement.focus({ preventScroll: true });
+        }
+
+        returnFocusElement = null;
     };
+
+    modalElement.value.addEventListener("hide.bs.modal", hideHandler);
     modalElement.value.addEventListener("hidden.bs.modal", hiddenHandler);
 });
 
 onBeforeUnmount(() => {
-    if (modalElement.value && hiddenHandler) {
-        modalElement.value.removeEventListener("hidden.bs.modal", hiddenHandler);
+    if (modalElement.value) {
+        if (hideHandler) {
+            modalElement.value.removeEventListener("hide.bs.modal", hideHandler);
+        }
+
+        if (hiddenHandler) {
+            modalElement.value.removeEventListener("hidden.bs.modal", hiddenHandler);
+        }
     }
 
     modalInstance?.dispose();
@@ -45,6 +69,7 @@ onBeforeUnmount(() => {
 async function open() {
     if (!props.pokemon?.id || !modalInstance) return;
 
+    returnFocusElement = document.activeElement;
     evolutionChain.value = null;
     errorMessage.value = "";
     isLoading.value = true;

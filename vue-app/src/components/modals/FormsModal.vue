@@ -102,23 +102,59 @@ function getFormIdentifier(form) {
 async function preloadFormArtwork(form) {
     const candidates = getImageCandidates(form);
 
-    for (const candidate of candidates) {
-        try {
-            await new Promise((resolve, reject) => {
-                const image = new Image();
-                image.onload = resolve;
-                image.onerror = reject;
-                image.src = candidate;
-
-                if (image.complete && image.naturalWidth > 0) {
-                    resolve();
+    for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        const loaded = await new Promise((resolve) => {
+            const image = new Image();
+            let settled = false;
+            const finish = (result) => {
+                if (settled) return;
+                settled = true;
+                window.clearTimeout(timeoutId);
+                resolve(result);
+            };
+            const timeoutId = window.setTimeout(() => finish(false), 10000);
+            image.onload = async () => {
+                try {
+                    if (typeof image.decode === "function") await image.decode();
+                    finish(image.naturalWidth > 0);
+                } catch {
+                    finish(false);
                 }
-            });
+            };
+            image.onerror = () => finish(false);
+            image.src = candidate;
+            if (image.complete) {
+                if (image.naturalWidth > 0) {
+                    if (typeof image.decode === "function") {
+                        image.decode().then(() => finish(true)).catch(() => finish(false));
+                    } else finish(true);
+                } else finish(false);
+            }
+        });
 
+        if (loaded) {
+            imageIndexes[getFormKey(form)] = index;
             return;
-        } catch {
         }
     }
+
+    unavailableImages[getFormKey(form)] = true;
+}
+
+async function preloadFormsArtwork(items, concurrency = 6) {
+    let nextIndex = 0;
+    const workers = Array.from(
+        { length: Math.min(concurrency, items.length) },
+        async () => {
+            while (nextIndex < items.length) {
+                const index = nextIndex;
+                nextIndex += 1;
+                await preloadFormArtwork(items[index]);
+            }
+        }
+    );
+    await Promise.all(workers);
 }
 
 async function open() {
@@ -133,7 +169,7 @@ async function open() {
     modalInstance.show();
 
     try {
-        await Promise.all(forms.value.map(preloadFormArtwork));
+        await preloadFormsArtwork(forms.value);
 
         if (currentRequestId !== requestId) return;
     } finally {

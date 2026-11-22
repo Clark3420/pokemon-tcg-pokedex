@@ -7,9 +7,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#111827" />
     <meta name="description" content="Explore Pokémon, discover their stats, abilities, evolutions, and forms in Pokédex TCG." />
+    <link rel="preload" as="image" href="/assets/backgrounds/electric.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/25.svg" fetchpriority="high" />
     <title>Pokédex TCG — Discover Every Pokémon</title>
+    <style>
+      #initial-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 20000;
+        display: grid;
+        place-items: center;
+        background: #0b1020;
+        color: #e5e7eb;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 220ms ease, visibility 220ms ease;
+      }
+      #initial-loader.is-ready {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #initial-loader .initial-loader-content {
+        display: grid;
+        justify-items: center;
+        gap: 16px;
+        font: 600 14px/1.5 system-ui, sans-serif;
+        letter-spacing: .02em;
+      }
+      #initial-loader .initial-loader-spinner {
+        width: 54px;
+        height: 54px;
+        border: 5px solid rgb(255 255 255 / 16%);
+        border-top-color: #ef4444;
+        border-radius: 50%;
+        animation: initial-loader-spin .85s linear infinite;
+      }
+      @keyframes initial-loader-spin {
+        to { transform: rotate(360deg); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #initial-loader { transition: none; }
+        #initial-loader .initial-loader-spinner { animation: none; }
+      }
+    </style>
   </head>
   <body>
+    <div id="initial-loader">
+      <div class="initial-loader-content">
+        <span class="initial-loader-spinner"></span>
+        <span>Preparing your Pokédex...</span>
+      </div>
+    </div>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

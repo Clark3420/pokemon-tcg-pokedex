@@ -1,6 +1,6 @@
 
 <script setup>
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import PokemonCard from "./components/pokemon/PokemonCard.vue";
 import { usePokemonNavigation } from "./composables/usePokemonNavigation.js";
 import { useCardInteractions } from "./composables/useCardInteractions.js";
@@ -25,6 +25,8 @@ const {
 } = collection;
 const evolutionModal = ref(null);
 const formsModal = ref(null);
+const isLoadingEvolution = ref(false);
+const isLoadingForms = ref(false);
 const selectedForm = ref(null);
 const isApplyingForm = ref(false);
 let formApplyRequestId = 0;
@@ -122,12 +124,90 @@ watch(
     { immediate: true }
 );
 
-onMounted(() => {
+const initialVisualAssets = [
+    "/assets/backgrounds/normal.webp",
+    "/assets/backgrounds/fire.webp",
+    "/assets/backgrounds/water.webp",
+    "/assets/backgrounds/electric.webp",
+    "/assets/backgrounds/grass.webp",
+    "/assets/backgrounds/ice.webp",
+    "/assets/backgrounds/fighting.webp",
+    "/assets/backgrounds/poison.webp",
+    "/assets/backgrounds/ground.webp",
+    "/assets/backgrounds/flying.webp",
+    "/assets/backgrounds/psychic.webp",
+    "/assets/backgrounds/bug.webp",
+    "/assets/backgrounds/rock.webp",
+    "/assets/backgrounds/ghost.webp",
+    "/assets/backgrounds/dragon.webp",
+    "/assets/backgrounds/dark.webp",
+    "/assets/backgrounds/steel.webp",
+    "/assets/backgrounds/fairy.webp",
+    "/assets/backgrounds/evolution-sanctuary.svg",
+    getPokemonTypeBadgeUrl("electric"),
+];
+
+async function preloadInitialVisuals() {
+    const visualPreparation = Promise.all(
+        initialVisualAssets.map((url) => preloadImage(url))
+    );
+    const fontPreparation = document.fonts?.ready || Promise.resolve();
+
+    await Promise.all([
+        visualPreparation,
+        Promise.race([
+            fontPreparation,
+            new Promise((resolve) => window.setTimeout(resolve, 2500)),
+        ]),
+    ]);
+}
+
+async function initializeApplication() {
     collection.setActiveCollectionCount(1351);
-    navigateToPokemon(25);
+
+    await Promise.all([
+        preloadInitialVisuals(),
+        navigateToPokemon(25),
+    ]);
+
+    await nextTick();
+    await new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+
+    const initialLoader = document.getElementById("initial-loader");
+
+    if (initialLoader) {
+        initialLoader.classList.add("is-ready");
+        window.setTimeout(() => initialLoader.remove(), 240);
+    }
+}
+
+function handleNavigationKeydown(event) {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+
+    const target = event.target;
+    const isEditable = target instanceof HTMLElement && (
+        target.isContentEditable ||
+        target.matches("input, textarea, select, [contenteditable='true']")
+    );
+
+    if (isEditable) return;
+    if (document.querySelector(".modal.show")) return;
+    if (!hasFilterResults.value || isFiltering.value) return;
+
+    event.preventDefault();
+    navigateByOffset(event.key === "ArrowRight" ? 1 : -1);
+}
+
+onMounted(() => {
+    document.addEventListener("keydown", handleNavigationKeydown);
+    initializeApplication();
 });
 
 onUnmounted(() => {
+    document.removeEventListener("keydown", handleNavigationKeydown);
     formsRequestId += 1;
     navigation.invalidatePendingNavigation();
 });
@@ -251,37 +331,69 @@ function handleTypeChange(type) {
     applyFilters();
 }
 
-function openEvolutionModal() {
-    if (currentPokemon.value) {
-        evolutionModal.value?.open();
+async function openEvolutionModal() {
+    if (!currentPokemon.value || isLoadingEvolution.value) return;
+
+    isLoadingEvolution.value = true;
+
+    try {
+        await evolutionModal.value?.open();
+    } finally {
+        isLoadingEvolution.value = false;
     }
 }
 
-function openFormsModal() {
-    if (currentPokemon.value && availableForms.value.length >= 2) {
-        formsModal.value?.open();
+async function openFormsModal() {
+    if (
+        !currentPokemon.value ||
+        availableForms.value.length < 2 ||
+        isLoadingForms.value
+    ) return;
+
+    isLoadingForms.value = true;
+
+    try {
+        await formsModal.value?.open();
+    } finally {
+        isLoadingForms.value = false;
     }
 }
 
-function preloadImage(url) {
+function preloadImage(url, timeout = 6000) {
     if (!url) return Promise.resolve(false);
 
     return new Promise((resolve) => {
         const image = new Image();
-        image.onload = async () => {
+        let settled = false;
+        const timeoutId = window.setTimeout(() => finish(false), timeout);
+
+        const finish = (loaded) => {
+            if (settled) return;
+            settled = true;
+            window.clearTimeout(timeoutId);
+            resolve(loaded);
+        };
+
+        const decodeAndFinish = async () => {
             try {
                 if (typeof image.decode === "function") {
                     await image.decode();
                 }
             } catch {
             }
-            resolve(true);
+            finish(image.naturalWidth > 0);
         };
-        image.onerror = () => resolve(false);
+
+        image.onload = decodeAndFinish;
+        image.onerror = () => finish(false);
         image.src = url;
 
-        if (image.complete && image.naturalWidth > 0) {
-            resolve(true);
+        if (image.complete) {
+            if (image.naturalWidth > 0) {
+                decodeAndFinish();
+            } else {
+                finish(false);
+            }
         }
     });
 }
@@ -523,13 +635,13 @@ async function handleFormSelection(form) {
 
             <div class="pokemon-card-wrapper">
                 <div
-                    v-if="isLoading && !currentPokemon"
+                    v-if="(isLoading || isFiltering) && !currentPokemon"
                     class="text-center py-5"
                 >
                     <div class="pokeball-loader">
                         <span class="pokeball-loader-center"></span>
                     </div>
-                    <p class="mt-3">{{ isApplyingForm ? "Loading Pokémon form..." : "Loading Pokémon..." }}</p>
+                    <p class="mt-3">{{ isApplyingForm ? "Loading Pokémon form..." : isFiltering ? "Applying filters..." : "Loading Pokémon..." }}</p>
                 </div>
 
                 <PokemonCard
@@ -546,14 +658,14 @@ async function handleFormSelection(form) {
                 />
 
                 <div
-                    v-if="(isLoading || isApplyingForm) && currentPokemon"
+                    v-if="(isLoading || isFiltering || isApplyingForm) && currentPokemon"
                     class="pokemon-loading-overlay"
                     :class="{ 'loading-compact': loadingCompact || isApplyingForm }"
                 >
                     <div class="pokeball-loader">
                         <span class="pokeball-loader-center"></span>
                     </div>
-                    <p class="mt-3">{{ isApplyingForm ? "Loading Pokémon form..." : "Loading Pokémon..." }}</p>
+                    <p class="mt-3">{{ isApplyingForm ? "Loading Pokémon form..." : isFiltering ? "Applying filters..." : "Loading Pokémon..." }}</p>
                 </div>
             </div>
 
@@ -574,17 +686,19 @@ async function handleFormSelection(form) {
         >
             <button
                 type="button"
+                id="evolution-button"
                 class="btn btn-danger px-4"
-                :disabled="!currentPokemon || navigationInProgress"
+                :disabled="!currentPokemon || navigationInProgress || isLoadingEvolution"
                 @click="openEvolutionModal"
             >
-                View Evolution Chain
+                {{ isLoadingEvolution ? "Loading Evolutions..." : "View Evolution Chain" }}
             </button>
 
             <button
                 type="button"
+                id="forms-button"
                 class="btn btn-info px-4"
-                :disabled="isCheckingForms || availableForms.length < 2 || navigationInProgress"
+                :disabled="isCheckingForms || availableForms.length < 2 || navigationInProgress || isLoadingForms"
                 :title="
                     isCheckingForms
                         ? 'Checking whether this Pokémon has alternate forms.'
@@ -594,7 +708,7 @@ async function handleFormSelection(form) {
                 "
                 @click="openFormsModal"
             >
-                {{ isCheckingForms ? "Checking Forms..." : "View Pokémon Forms" }}
+                {{ isCheckingForms ? "Checking Forms..." : isLoadingForms ? "Loading Forms..." : "View Pokémon Forms" }}
             </button>
         </section>
         <EvolutionModal
